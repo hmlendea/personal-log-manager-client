@@ -1,7 +1,7 @@
 using System;
-using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NuciAPI.Client;
 using PersonalLogManagerClient.Configuration;
 using PersonalLogManagerClient.Services;
 
@@ -27,10 +27,8 @@ namespace PersonalLogManagerClient
         public static IServiceCollection AddCustomServices(this IServiceCollection services)
         {
             return services
-                .AddScoped(sp => new HttpClient
-                {
-                    BaseAddress = new Uri(sp.GetRequiredService<PersonalLogManagerSettings>().BaseUrl ?? "http://localhost:5000")
-                })
+                .AddScoped<INuciApiClient>(sp => new NuciApiClient(
+                    sp.GetRequiredService<PersonalLogManagerSettings>().BaseUrl ?? "http://localhost:5000"))
                 .AddScoped<ApiKeyService>()
                 .AddScoped<PersonalLogService>();
         }
