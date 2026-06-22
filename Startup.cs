@@ -1,9 +1,7 @@
-using System;
-using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PersonalLogManagerClient.Services;
+using PersonalLogManagerClient.Configuration;
 
 namespace PersonalLogManagerClient
 {
@@ -16,14 +14,18 @@ namespace PersonalLogManagerClient
             services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-            string baseUrl = Configuration["PersonalLogManager:BaseUrl"] ?? "http://localhost:5000";
-            services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(baseUrl) });
-            services.AddScoped<ApiKeyService>();
-            services.AddScoped<PersonalLogService>();
+            services
+                .AddConfigurations(Configuration)
+                .AddCustomServices();
         }
 
         public void Configure(IApplicationBuilder app)
         {
+            ServerSettings serverSettings = app.ApplicationServices.GetRequiredService<ServerSettings>();
+
+            if (!string.IsNullOrEmpty(serverSettings.PathBase))
+                app.UsePathBase(serverSettings.PathBase);
+
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAntiforgery();
