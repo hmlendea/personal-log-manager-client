@@ -36,8 +36,8 @@ The default configuration is in `wwwroot/appsettings.json`:
 
 ```json
 {
-  "PersonalLogManager": {
-    "BaseUrl": "http://localhost:5000"
+  "personalLogManager": {
+    "baseUrl": "http://localhost:5000"
   }
 }
 ```
