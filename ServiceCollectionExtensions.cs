@@ -26,13 +26,11 @@ namespace PersonalLogManagerClient
 
         public static IServiceCollection AddCustomServices(this IServiceCollection services)
         {
-            string baseUrl = services
-                .BuildServiceProvider()
-                .GetRequiredService<PersonalLogManagerSettings>()
-                .BaseUrl ?? "http://localhost:5000";
-
             return services
-                .AddScoped(_ => new HttpClient { BaseAddress = new Uri(baseUrl) })
+                .AddScoped(sp => new HttpClient
+                {
+                    BaseAddress = new Uri(sp.GetRequiredService<PersonalLogManagerSettings>().BaseUrl ?? "http://localhost:5000")
+                })
                 .AddScoped<ApiKeyService>()
                 .AddScoped<PersonalLogService>();
         }

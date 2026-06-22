@@ -5,23 +5,21 @@ using PersonalLogManagerClient.Configuration;
 
 namespace PersonalLogManagerClient
 {
-    public class Startup(IConfiguration configuration)
+    public static class Startup
     {
-        public IConfiguration Configuration => configuration;
-
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
             services
-                .AddConfigurations(Configuration)
+                .AddConfigurations(configuration)
                 .AddCustomServices();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public static void Configure(WebApplication app)
         {
-            ServerSettings serverSettings = app.ApplicationServices.GetRequiredService<ServerSettings>();
+            ServerSettings serverSettings = app.Services.GetRequiredService<ServerSettings>();
 
             if (!string.IsNullOrEmpty(serverSettings.PathBase))
                 app.UsePathBase(serverSettings.PathBase);
@@ -30,11 +28,8 @@ namespace PersonalLogManagerClient
             app.UseRouting();
             app.UseAntiforgery();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorComponents<App>()
-                    .AddInteractiveServerRenderMode();
-            });
+            app.MapRazorComponents<App>()
+                .AddInteractiveServerRenderMode();
         }
     }
 }
