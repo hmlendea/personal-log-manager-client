@@ -16,9 +16,10 @@ namespace PersonalLogManagerClient
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
+            string baseUrl = builder.Configuration["PersonalLogManager:BaseUrl"] ?? "http://localhost:5000";
             builder.Services.AddScoped(sp => new HttpClient
             {
-                BaseAddress = new Uri("http://localhost:5000")
+                BaseAddress = new Uri(baseUrl)
             });
 
             builder.Services.AddScoped<ApiKeyService>();
