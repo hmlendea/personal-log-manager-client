@@ -59,7 +59,11 @@ html, body {
     color: var(--accent);
     letter-spacing: 0.01em;
     white-space: nowrap;
-  text-decoration: none;
+    text-decoration: none;
+}
+
+.top-bar-brand-line2 {
+    display: inline;
 }
 
 .top-bar-brand:hover {
@@ -184,6 +188,16 @@ html, body {
     align-items: center;
     gap: 8px;
     margin-left: auto;
+}
+
+@media (max-width: 400px) {
+    .top-bar-brand {
+        white-space: normal;
+    }
+
+    .top-bar-brand-line2 {
+        display: block;
+    }
 }
 
 @media (min-width: 560px) {
