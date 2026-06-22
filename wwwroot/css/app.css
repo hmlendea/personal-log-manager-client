@@ -59,12 +59,11 @@ html, body {
     color: var(--accent);
     letter-spacing: 0.01em;
     white-space: nowrap;
+  text-decoration: none;
 }
 
-.top-bar-auth {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.top-bar-brand:hover {
+  color: var(--accent-hover);
 }
 
 /* ── Auth widgets ───────────────────────────────────── */
