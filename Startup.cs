@@ -1,7 +1,6 @@
 using System;
 using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PersonalLogManagerClient.Services;
@@ -23,11 +22,11 @@ namespace PersonalLogManagerClient
             services.AddScoped<PersonalLogService>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseStaticFiles();
-            app.UseAntiforgery();
             app.UseRouting();
+            app.UseAntiforgery();
 
             app.UseEndpoints(endpoints =>
             {
