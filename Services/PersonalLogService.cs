@@ -31,7 +31,7 @@ namespace PersonalLogManagerClient.Services
             response.EnsureSuccessStatusCode();
 
             GetLogsResponse result = await response.Content.ReadFromJsonAsync<GetLogsResponse>();
-            return [.. (result?.Logs ?? []).Select(entry => _trimPattern.Replace(entry, ""))];
+            return [.. (result?.Logs ?? []).Select(entry => _trimPattern.Replace(entry, "")).Reverse()];
         }
     }
 }
