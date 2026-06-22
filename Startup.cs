@@ -1,38 +1,35 @@
-using System;
-using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PersonalLogManagerClient.Services;
+using PersonalLogManagerClient.Configuration;
 
 namespace PersonalLogManagerClient
 {
-    public class Startup(IConfiguration configuration)
+    public static class Startup
     {
-        public IConfiguration Configuration => configuration;
-
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-            string baseUrl = Configuration["PersonalLogManager:BaseUrl"] ?? "http://localhost:5000";
-            services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(baseUrl) });
-            services.AddScoped<ApiKeyService>();
-            services.AddScoped<PersonalLogService>();
+            services
+                .AddConfigurations(configuration)
+                .AddCustomServices();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public static void Configure(WebApplication app)
         {
+            ServerSettings serverSettings = app.Services.GetRequiredService<ServerSettings>();
+
+            if (!string.IsNullOrEmpty(serverSettings.PathBase))
+                app.UsePathBase(serverSettings.PathBase);
+
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAntiforgery();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorComponents<App>()
-                    .AddInteractiveServerRenderMode();
-            });
+            app.MapRazorComponents<App>()
+                .AddInteractiveServerRenderMode();
         }
     }
 }
