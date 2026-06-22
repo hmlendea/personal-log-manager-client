@@ -10,11 +10,13 @@
             <h2 class="entries-title">@(currentDate == today ? "Today's Entries" : "Entries")</h2>
             <span class="entries-date">@currentDate</span>
         </div>
-        <div class="entries-nav">
+        <div class="entries-nav-controls">
             <button class="btn btn-nav" title="Previous day" @onclick="GoToPreviousDay" disabled="@loading">&#8592;</button>
             <input type="date" class="date-picker" value="@currentDate" max="@today"
                    @onchange="OnDatePickerChanged" disabled="@loading" />
             <button class="btn btn-nav" title="Next day" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
+        </div>
+        <div class="entries-nav-actions">
             <button class="btn btn-refresh" @onclick="LoadEntries" disabled="@loading">
                 @(loading ? "Loading…" : "Refresh")
             </button>
