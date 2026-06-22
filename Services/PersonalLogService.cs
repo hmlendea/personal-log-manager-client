@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using NuciAPI.Client;
+using NuciAPI.Requests;
 using PersonalLogManagerClient.Models;
 
 namespace PersonalLogManagerClient.Services
 {
-    public class PersonalLogService(HttpClient http, ApiKeyService apiKeyService)
+    public class PersonalLogService(INuciApiClient client, ApiKeyService apiKeyService)
     {
-        private readonly HttpClient http = http;
+        private readonly INuciApiClient client = client;
         private readonly ApiKeyService apiKeyService = apiKeyService;
 
         // Matches: leading log ID (L + digits + space) and date (yyyy-MM-dd: )
@@ -23,15 +23,31 @@ namespace PersonalLogManagerClient.Services
         {
             string apiKey = await apiKeyService.GetApiKeyAsync();
 
-            string url = $"/PersonalLog?date={Uri.EscapeDataString(date)}&count={count}&localisation={Uri.EscapeDataString(localisation)}";
-            HttpRequestMessage request = new(HttpMethod.Get, url);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            GetLogsRequest request = new()
+            {
+                Date = date,
+                Count = count,
+                Localisation = localisation
+            };
 
-            HttpResponseMessage response = await http.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            NuciApiRequestAuthorisationInfo auth = new()
+            {
+                BearerToken = apiKey,
+                ClientId = $"PersonalLogManagerClient_{Environment.MachineName}"
+            };
 
-            GetLogsResponse result = await response.Content.ReadFromJsonAsync<GetLogsResponse>();
-            return [.. (result?.Logs ?? []).Select(entry => trimPattern.Replace(entry, "")).Reverse()];
+            NuciAPI.Responses.NuciApiResponse response = await client.SendRequestAsync<GetLogsRequest, GetLogsResponse>(
+                HttpMethod.Get,
+                request,
+                auth,
+                "/PersonalLog");
+
+            if (response is GetLogsResponse logsResponse)
+            {
+                return [.. (logsResponse.Logs ?? []).Select(entry => trimPattern.Replace(entry, "")).Reverse()];
+            }
+
+            return [];
         }
     }
 }
