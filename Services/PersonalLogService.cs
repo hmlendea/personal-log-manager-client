@@ -32,7 +32,8 @@ namespace PersonalLogManagerClient.Services
 
             NuciApiRequestAuthorisationInfo auth = new()
             {
-                BearerToken = apiKey
+                BearerToken = apiKey,
+                ClientId = $"PersonalLogManagerClient_{Environment.MachineName}"
             };
 
             NuciAPI.Responses.NuciApiResponse response = await client.SendRequestAsync<GetLogsRequest, GetLogsResponse>(
