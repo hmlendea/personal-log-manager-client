@@ -5,7 +5,7 @@
 
 # Personal Log Manager Client
 
-A Blazor WebAssembly front-end for the [Personal Log Manager](https://github.com/hmlendea/personal-log-manager) API.
+A Blazor Server web application for the [Personal Log Manager](https://github.com/hmlendea/personal-log-manager) API.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ A Blazor WebAssembly front-end for the [Personal Log Manager](https://github.com
 
 ## Overview
 
-Personal Log Manager Client is a single-page web application that connects to a running Personal Log Manager API instance and lets you browse your personal log entries by date.
+Personal Log Manager Client is a self-hosted web application that connects to a running Personal Log Manager API instance and lets you browse your personal log entries by date.
 
 Features:
 - Browse log entries for any past date or today
@@ -32,7 +32,7 @@ Features:
 
 ## Configuration
 
-The default configuration is in `wwwroot/appsettings.json`:
+The configuration is in `appsettings.json`:
 
 ```json
 {
