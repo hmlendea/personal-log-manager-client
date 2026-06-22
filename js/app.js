@@ -30,7 +30,7 @@ function renderAuthSection() {
   } else {
     section.innerHTML =
       '<input id="api-key-input" class="api-key-input" type="password"' +
-      ' placeholder="Enter API key…" autocomplete="off" spellcheck="false">' +
+      ' placeholder="Enter the API key…" autocomplete="off" spellcheck="false">' +
       '<button class="btn btn-primary" id="btn-save-key">Save</button>';
 
     const input = document.getElementById('api-key-input');

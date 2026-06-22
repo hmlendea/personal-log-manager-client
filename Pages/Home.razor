@@ -7,40 +7,40 @@
 <div class="entries-container">
     <div class="entries-header">
         <div class="entries-header-left">
-            <h2 class="entries-title">@(_currentDate == _today ? "Today's Entries" : "Entries")</h2>
-            <span class="entries-date">@_currentDate</span>
+            <h2 class="entries-title">@(currentDate == today ? "Today's Entries" : "Entries")</h2>
+            <span class="entries-date">@currentDate</span>
         </div>
         <div class="entries-nav">
-            <button class="btn btn-nav" title="Previous day" @onclick="GoToPreviousDay" disabled="@_loading">&#8592;</button>
-            <input type="date" class="date-picker" value="@_currentDate" max="@_today"
-                   @onchange="OnDatePickerChanged" disabled="@_loading" />
-            <button class="btn btn-nav" title="Next day" @onclick="GoToNextDay" disabled="@(_loading || _currentDate == _today)">&#8594;</button>
-            <button class="btn btn-refresh" @onclick="LoadEntries" disabled="@_loading">
-                @(_loading ? "Loading…" : "Refresh")
+            <button class="btn btn-nav" title="Previous day" @onclick="GoToPreviousDay" disabled="@loading">&#8592;</button>
+            <input type="date" class="date-picker" value="@currentDate" max="@today"
+                   @onchange="OnDatePickerChanged" disabled="@loading" />
+            <button class="btn btn-nav" title="Next day" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
+            <button class="btn btn-refresh" @onclick="LoadEntries" disabled="@loading">
+                @(loading ? "Loading…" : "Refresh")
             </button>
         </div>
     </div>
 
-    @if (!_hasApiKey)
+    @if (!hasApiKey)
     {
         <p class="entries-notice">Set an API key in the top bar to load entries.</p>
     }
-    else if (_error != null)
+    else if (error != null)
     {
-        <p class="entries-error">@_error</p>
+        <p class="entries-error">@error</p>
     }
-    else if (_loading)
+    else if (loading)
     {
         <p class="entries-notice">Loading…</p>
     }
-    else if (_entries.Count == 0)
+    else if (entries.Count == 0)
     {
-        <p class="entries-notice">No entries for @_currentDate.</p>
+        <p class="entries-notice">No entries for @currentDate.</p>
     }
     else
     {
         <ul class="entries-list">
-            @foreach (string entry in _entries)
+            @foreach (string entry in entries)
             {
                 <li class="entry-item">@entry</li>
             }
@@ -49,73 +49,69 @@
 </div>
 
 @code {
-    private string _today = DateTime.Today.ToString("yyyy-MM-dd");
-    private string _currentDate = DateTime.Today.ToString("yyyy-MM-dd");
-    private List<string> _entries = new List<string>();
-    private bool _loading = false;
-    private bool _hasApiKey = false;
-    private string _error = null;
+    private string today = DateTime.Today.ToString("yyyy-MM-dd");
+    private string currentDate = DateTime.Today.ToString("yyyy-MM-dd");
+    private List<string> entries = [];
+    private bool loading;
+    private bool hasApiKey;
+    private string error;
 
-    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         string key = await ApiKeyService.GetApiKeyAsync();
-        _hasApiKey = !string.IsNullOrEmpty(key);
-        if (_hasApiKey)
+        hasApiKey = !string.IsNullOrEmpty(key);
+        if (hasApiKey)
             await LoadEntries();
     }
 
-    private async System.Threading.Tasks.Task OnDatePickerChanged(ChangeEventArgs e)
+    private async Task OnDatePickerChanged(ChangeEventArgs e)
     {
         string picked = e.Value?.ToString();
-        if (!string.IsNullOrEmpty(picked) && picked != _currentDate)
-        {
-            if (string.Compare(picked, _today) <= 0)
-            {
-                _currentDate = picked;
-                await LoadEntries();
-            }
-        }
-    }
+        if (string.IsNullOrEmpty(picked) || picked == currentDate || string.Compare(picked, today) > 0)
+            return;
 
-    private async System.Threading.Tasks.Task GoToPreviousDay()
-    {
-        _currentDate = DateTime.Parse(_currentDate).AddDays(-1).ToString("yyyy-MM-dd");
+        currentDate = picked;
         await LoadEntries();
     }
 
-    private async System.Threading.Tasks.Task GoToNextDay()
+    private async Task GoToPreviousDay()
     {
-        DateTime next = DateTime.Parse(_currentDate).AddDays(1);
-        DateTime today = DateTime.Today;
-        if (next <= today)
-        {
-            _currentDate = next.ToString("yyyy-MM-dd");
-            await LoadEntries();
-        }
+        currentDate = DateTime.Parse(currentDate).AddDays(-1).ToString("yyyy-MM-dd");
+        await LoadEntries();
     }
 
-    private async System.Threading.Tasks.Task LoadEntries()
+    private async Task GoToNextDay()
+    {
+        DateTime next = DateTime.Parse(currentDate).AddDays(1);
+        if (next > DateTime.Today)
+            return;
+
+        currentDate = next.ToString("yyyy-MM-dd");
+        await LoadEntries();
+    }
+
+    private async Task LoadEntries()
     {
         string key = await ApiKeyService.GetApiKeyAsync();
-        _hasApiKey = !string.IsNullOrEmpty(key);
-        if (!_hasApiKey) return;
+        hasApiKey = !string.IsNullOrEmpty(key);
+        if (!hasApiKey) return;
 
-        _loading = true;
-        _error = null;
+        loading = true;
+        error = null;
         StateHasChanged();
 
         try
         {
-            _entries = await LogService.GetLogsForDateAsync(_currentDate);
+            entries = await LogService.GetLogsForDateAsync(currentDate);
         }
         catch (Exception ex)
         {
-            _error = ex.Message;
-            _entries = new List<string>();
+            error = ex.Message;
+            entries = [];
         }
         finally
         {
-            _loading = false;
+            loading = false;
         }
     }
 }
