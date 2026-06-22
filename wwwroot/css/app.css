@@ -169,6 +169,30 @@ html, body {
     color: var(--text-muted);
 }
 
+.entries-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-nav {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--input-border);
+    padding: 0 10px;
+    font-size: 16px;
+}
+
+.btn-nav:hover:not(:disabled) {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.btn-nav:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
 .btn-refresh {
     background: transparent;
     color: var(--accent);

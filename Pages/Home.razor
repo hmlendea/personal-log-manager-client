@@ -7,12 +7,16 @@
 <div class="entries-container">
     <div class="entries-header">
         <div class="entries-header-left">
-            <h2 class="entries-title">Today's Entries</h2>
-            <span class="entries-date">@_today</span>
+            <h2 class="entries-title">@(_currentDate == _today ? "Today's Entries" : "Entries")</h2>
+            <span class="entries-date">@_currentDate</span>
         </div>
-        <button class="btn btn-refresh" @onclick="LoadEntries" disabled="@_loading">
-            @(_loading ? "Loading…" : "Refresh")
-        </button>
+        <div class="entries-nav">
+            <button class="btn btn-nav" title="Previous day" @onclick="GoToPreviousDay" disabled="@_loading">&#8592;</button>
+            <button class="btn btn-nav" title="Next day" @onclick="GoToNextDay" disabled="@(_loading || _currentDate == _today)">&#8594;</button>
+            <button class="btn btn-refresh" @onclick="LoadEntries" disabled="@_loading">
+                @(_loading ? "Loading…" : "Refresh")
+            </button>
+        </div>
     </div>
 
     @if (!_hasApiKey)
@@ -29,7 +33,7 @@
     }
     else if (_entries.Count == 0)
     {
-        <p class="entries-notice">No entries for today.</p>
+        <p class="entries-notice">No entries for @_currentDate.</p>
     }
     else
     {
@@ -44,6 +48,7 @@
 
 @code {
     private string _today = DateTime.Today.ToString("yyyy-MM-dd");
+    private string _currentDate = DateTime.Today.ToString("yyyy-MM-dd");
     private List<string> _entries = new List<string>();
     private bool _loading = false;
     private bool _hasApiKey = false;
@@ -55,6 +60,23 @@
         _hasApiKey = !string.IsNullOrEmpty(key);
         if (_hasApiKey)
             await LoadEntries();
+    }
+
+    private async System.Threading.Tasks.Task GoToPreviousDay()
+    {
+        _currentDate = DateTime.Parse(_currentDate).AddDays(-1).ToString("yyyy-MM-dd");
+        await LoadEntries();
+    }
+
+    private async System.Threading.Tasks.Task GoToNextDay()
+    {
+        DateTime next = DateTime.Parse(_currentDate).AddDays(1);
+        DateTime today = DateTime.Today;
+        if (next <= today)
+        {
+            _currentDate = next.ToString("yyyy-MM-dd");
+            await LoadEntries();
+        }
     }
 
     private async System.Threading.Tasks.Task LoadEntries()
@@ -69,7 +91,7 @@
 
         try
         {
-            _entries = await LogService.GetLogsForDateAsync(_today);
+            _entries = await LogService.GetLogsForDateAsync(_currentDate);
         }
         catch (Exception ex)
         {
