@@ -1,23 +1,38 @@
 [![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/fund.html)
-[![Latest Release](https://img.shields.io/github/v/release/hmlendea/personal-log-manager-clint)](https://github.com/hmlendea/personal-log-manager-client/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/hmlendea/personal-log-manager-client)](https://github.com/hmlendea/personal-log-manager-client/releases/latest)
 [![Build Status](https://github.com/hmlendea/personal-log-manager-client/actions/workflows/dotnet.yml/badge.svg)](https://github.com/hmlendea/personal-log-manager-client/actions/workflows/dotnet.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://gnu.org/licenses/gpl-3.0)
 
 # Personal Log Manager Client
 
-Web client for Personal Log Manager.
+A Blazor WebAssembly front-end for the [Personal Log Manager](https://github.com/hmlendea/personal-log-manager) API.
 
 ## Table of Contents
 
+- [Overview](#overview)
+- [Requirements](#requirements)
+- [Configuration](#configuration)
+- [Running](#running)
+- [Development](#development)
+
 ## Overview
+
+Personal Log Manager Client is a single-page web application that connects to a running Personal Log Manager API instance and lets you browse your personal log entries by date.
+
+Features:
+- Browse log entries for any past date or today
+- Navigate between days using previous/next buttons or a date picker
+- Entries are displayed in reverse chronological order
+- API key authentication stored in browser local storage
 
 ## Requirements
 
-- .NET SDK/runtime with support for `net10.0`
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- A running [Personal Log Manager](https://github.com/hmlendea/personal-log-manager) API instance
 
 ## Configuration
 
-Default configuration is defined in `wwwroot/appsettings.json`:
+The default configuration is in `wwwroot/appsettings.json`:
 
 ```json
 {
@@ -27,18 +42,20 @@ Default configuration is defined in `wwwroot/appsettings.json`:
 }
 ```
 
-Important settings:
+| Setting | Description |
+|---|---|
+| `PersonalLogManager.BaseUrl` | Base URL of the Personal Log Manager API instance |
 
-- `personalLogManager.baseUrl`: the base URL of the Personal Log Manager API instance.
-
-At startup, the app creates the store directory/file automatically if missing.
-
-## Run the web client
+## Running
 
 ```bash
 dotnet restore
 dotnet run
 ```
+
+The app will be available at `http://localhost:5294` by default.
+
+On first launch, enter your API key in the top bar. It will be saved in the browser's local storage.
 
 ## Development
 
