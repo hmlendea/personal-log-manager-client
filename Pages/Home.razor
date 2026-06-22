@@ -12,6 +12,8 @@
         </div>
         <div class="entries-nav">
             <button class="btn btn-nav" title="Previous day" @onclick="GoToPreviousDay" disabled="@_loading">&#8592;</button>
+            <input type="date" class="date-picker" value="@_currentDate" max="@_today"
+                   @onchange="OnDatePickerChanged" disabled="@_loading" />
             <button class="btn btn-nav" title="Next day" @onclick="GoToNextDay" disabled="@(_loading || _currentDate == _today)">&#8594;</button>
             <button class="btn btn-refresh" @onclick="LoadEntries" disabled="@_loading">
                 @(_loading ? "Loading…" : "Refresh")
@@ -60,6 +62,19 @@
         _hasApiKey = !string.IsNullOrEmpty(key);
         if (_hasApiKey)
             await LoadEntries();
+    }
+
+    private async System.Threading.Tasks.Task OnDatePickerChanged(ChangeEventArgs e)
+    {
+        string picked = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(picked) && picked != _currentDate)
+        {
+            if (string.Compare(picked, _today) <= 0)
+            {
+                _currentDate = picked;
+                await LoadEntries();
+            }
+        }
     }
 
     private async System.Threading.Tasks.Task GoToPreviousDay()

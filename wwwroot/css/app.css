@@ -193,6 +193,28 @@ html, body {
     cursor: default;
 }
 
+.date-picker {
+    height: 32px;
+    padding: 0 8px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.date-picker:focus {
+    border-color: var(--input-border-focus);
+}
+
+.date-picker:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
 .btn-refresh {
     background: transparent;
     color: var(--accent);
