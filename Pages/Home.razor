@@ -1,5 +1,84 @@
 ﻿@page "/"
+@inject PersonalLogService LogService
+@inject ApiKeyService ApiKeyService
 
 <PageTitle>Personal Log Manager</PageTitle>
 
-<p class="hello">Hello, World!</p>
+<div class="entries-container">
+    <div class="entries-header">
+        <div class="entries-header-left">
+            <h2 class="entries-title">Today's Entries</h2>
+            <span class="entries-date">@_today</span>
+        </div>
+        <button class="btn btn-refresh" @onclick="LoadEntries" disabled="@_loading">
+            @(_loading ? "Loading…" : "Refresh")
+        </button>
+    </div>
+
+    @if (!_hasApiKey)
+    {
+        <p class="entries-notice">Set an API key in the top bar to load entries.</p>
+    }
+    else if (_error != null)
+    {
+        <p class="entries-error">@_error</p>
+    }
+    else if (_loading)
+    {
+        <p class="entries-notice">Loading…</p>
+    }
+    else if (_entries.Count == 0)
+    {
+        <p class="entries-notice">No entries for today.</p>
+    }
+    else
+    {
+        <ul class="entries-list">
+            @foreach (string entry in _entries)
+            {
+                <li class="entry-item">@entry</li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    private string _today = DateTime.Today.ToString("yyyy-MM-dd");
+    private List<string> _entries = new List<string>();
+    private bool _loading = false;
+    private bool _hasApiKey = false;
+    private string _error = null;
+
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        string key = await ApiKeyService.GetApiKeyAsync();
+        _hasApiKey = !string.IsNullOrEmpty(key);
+        if (_hasApiKey)
+            await LoadEntries();
+    }
+
+    private async System.Threading.Tasks.Task LoadEntries()
+    {
+        string key = await ApiKeyService.GetApiKeyAsync();
+        _hasApiKey = !string.IsNullOrEmpty(key);
+        if (!_hasApiKey) return;
+
+        _loading = true;
+        _error = null;
+        StateHasChanged();
+
+        try
+        {
+            _entries = await LogService.GetLogsForDateAsync(_today);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+            _entries = new List<string>();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

@@ -1,13 +1,30 @@
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using PersonalLogManagerClient;
 using PersonalLogManagerClient.Services;
 
-var builder = WebAssemblyHostBuilder.CreateDefault(args);
-builder.RootComponents.Add<App>("#app");
-builder.RootComponents.Add<HeadOutlet>("head::after");
+namespace PersonalLogManagerClient
+{
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.RootComponents.Add<App>("#app");
+            builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped<ApiKeyService>();
+            builder.Services.AddScoped(sp => new HttpClient
+            {
+                BaseAddress = new Uri("http://localhost:5000")
+            });
 
-await builder.Build().RunAsync();
+            builder.Services.AddScoped<ApiKeyService>();
+            builder.Services.AddScoped<PersonalLogService>();
+
+            await builder.Build().RunAsync();
+        }
+    }
+}
