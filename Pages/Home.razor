@@ -1,0 +1,117 @@
+﻿@page "/"
+@inject PersonalLogService LogService
+@inject ApiKeyService ApiKeyService
+
+<PageTitle>Personal Log Manager</PageTitle>
+
+<div class="entries-container">
+    <div class="entries-header">
+        <div class="entries-header-left">
+            <h2 class="entries-title">@(currentDate == today ? "Today's Entries" : "Entries")</h2>
+            <span class="entries-date">@currentDate</span>
+        </div>
+        <div class="entries-nav">
+            <button class="btn btn-nav" title="Previous day" @onclick="GoToPreviousDay" disabled="@loading">&#8592;</button>
+            <input type="date" class="date-picker" value="@currentDate" max="@today"
+                   @onchange="OnDatePickerChanged" disabled="@loading" />
+            <button class="btn btn-nav" title="Next day" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
+            <button class="btn btn-refresh" @onclick="LoadEntries" disabled="@loading">
+                @(loading ? "Loading…" : "Refresh")
+            </button>
+        </div>
+    </div>
+
+    @if (!hasApiKey)
+    {
+        <p class="entries-notice">Set an API key in the top bar to load entries.</p>
+    }
+    else if (error != null)
+    {
+        <p class="entries-error">@error</p>
+    }
+    else if (loading)
+    {
+        <p class="entries-notice">Loading…</p>
+    }
+    else if (entries.Count == 0)
+    {
+        <p class="entries-notice">No entries for @currentDate.</p>
+    }
+    else
+    {
+        <ul class="entries-list">
+            @foreach (string entry in entries)
+            {
+                <li class="entry-item">@entry</li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    private string today = DateTime.Today.ToString("yyyy-MM-dd");
+    private string currentDate = DateTime.Today.ToString("yyyy-MM-dd");
+    private List<string> entries = [];
+    private bool loading;
+    private bool hasApiKey;
+    private string error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string key = await ApiKeyService.GetApiKeyAsync();
+        hasApiKey = !string.IsNullOrEmpty(key);
+        if (hasApiKey)
+            await LoadEntries();
+    }
+
+    private async Task OnDatePickerChanged(ChangeEventArgs e)
+    {
+        string picked = e.Value?.ToString();
+        if (string.IsNullOrEmpty(picked) || picked == currentDate || string.Compare(picked, today) > 0)
+            return;
+
+        currentDate = picked;
+        await LoadEntries();
+    }
+
+    private async Task GoToPreviousDay()
+    {
+        currentDate = DateTime.Parse(currentDate).AddDays(-1).ToString("yyyy-MM-dd");
+        await LoadEntries();
+    }
+
+    private async Task GoToNextDay()
+    {
+        DateTime next = DateTime.Parse(currentDate).AddDays(1);
+        if (next > DateTime.Today)
+            return;
+
+        currentDate = next.ToString("yyyy-MM-dd");
+        await LoadEntries();
+    }
+
+    private async Task LoadEntries()
+    {
+        string key = await ApiKeyService.GetApiKeyAsync();
+        hasApiKey = !string.IsNullOrEmpty(key);
+        if (!hasApiKey) return;
+
+        loading = true;
+        error = null;
+        StateHasChanged();
+
+        try
+        {
+            entries = await LogService.GetLogsForDateAsync(currentDate);
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+            entries = [];
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}

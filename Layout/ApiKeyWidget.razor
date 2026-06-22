@@ -1,0 +1,51 @@
+@inject ApiKeyService ApiKeyService
+
+@if (hasKey)
+{
+    <span class="api-key-set-label">API key set</span>
+    <button class="btn btn-clear-key" @onclick="ClearKey">Clear Key</button>
+}
+else
+{
+    <input @ref="inputRef"
+           type="password"
+           class="api-key-input"
+           placeholder="Enter the API key…"
+           autocomplete="off"
+           spellcheck="false"
+           @bind="inputValue"
+           @bind:event="oninput"
+           @onkeydown="OnKeyDown" />
+    <button class="btn btn-save-key" @onclick="SaveKey">Save</button>
+}
+
+@code {
+    private bool hasKey;
+    private string inputValue = "";
+    private ElementReference inputRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string key = await ApiKeyService.GetApiKeyAsync();
+        hasKey = !string.IsNullOrEmpty(key);
+    }
+
+    private async Task SaveKey()
+    {
+        if (string.IsNullOrWhiteSpace(inputValue)) return;
+        await ApiKeyService.SetApiKeyAsync(inputValue.Trim());
+        inputValue = "";
+        hasKey = true;
+    }
+
+    private async Task ClearKey()
+    {
+        await ApiKeyService.ClearApiKeyAsync();
+        hasKey = false;
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await SaveKey();
+    }
+}
