@@ -5,10 +5,10 @@
 @if (hasKey)
 {
     <button class="btn btn-clear-key" @onclick="ClearKey">@L.ClearKey</button>
-    <span class="api-key-set-label">@L.ApiKeySet</span>
 }
 else
 {
+    <button class="btn btn-save-key" title="@L.Save" @onclick="SaveKey"><i class="fa-solid fa-check"></i></button>
     <input @ref="inputRef"
            type="password"
            class="api-key-input"
@@ -18,7 +18,6 @@ else
            @bind="inputValue"
            @bind:event="oninput"
            @onkeydown="OnKeyDown" />
-    <button class="btn btn-save-key" @onclick="SaveKey">@L.Save</button>
 }
 
 @code {

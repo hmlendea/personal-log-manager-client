@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PersonalLogManagerClient.Configuration;
@@ -24,7 +25,15 @@ namespace PersonalLogManagerClient
             if (!string.IsNullOrEmpty(serverSettings.PathBase))
                 app.UsePathBase(serverSettings.PathBase);
 
-            app.UseStaticFiles();
+            FileExtensionContentTypeProvider contentTypeProvider = new();
+            contentTypeProvider.Mappings[".woff2"] = "font/woff2";
+            contentTypeProvider.Mappings[".woff"]  = "font/woff";
+            contentTypeProvider.Mappings[".ttf"]   = "font/ttf";
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ContentTypeProvider = contentTypeProvider
+            });
             app.UseRouting();
             app.UseAntiforgery();
 
