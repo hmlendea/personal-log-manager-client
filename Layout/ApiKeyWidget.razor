@@ -4,11 +4,11 @@
 
 @if (hasKey)
 {
-    <button class="btn btn-clear-key" @onclick="ClearKey">@L.ClearKey</button>
+    <button class="btn btn-clear-key" title="@L.ClearKey" @onclick="ClearKey"><i class="fa-solid fa-unlock"></i></button>
 }
 else
 {
-    <button class="btn btn-save-key" title="@L.Save" @onclick="SaveKey"><i class="fa-solid fa-check"></i></button>
+    <button class="btn btn-save-key" title="@L.Save" @onclick="SaveKey"><i class="fa-solid fa-key"></i></button>
     <input @ref="inputRef"
            type="password"
            class="api-key-input"
