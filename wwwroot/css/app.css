@@ -160,6 +160,9 @@ html, body {
     background: transparent;
     color: var(--danger);
     border: 1px solid var(--danger);
+    width: 32px;
+    padding: 0;
+    justify-content: center;
 }
 
 .btn-clear-key:hover {
