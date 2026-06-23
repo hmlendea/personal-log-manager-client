@@ -396,7 +396,7 @@ html, body {
 .date-calendar {
     position: absolute;
     top: calc(100% + 4px);
-    left: 0;
+    right: 0;
     min-width: 280px;
     z-index: 200;
     background: var(--bar-bg);
