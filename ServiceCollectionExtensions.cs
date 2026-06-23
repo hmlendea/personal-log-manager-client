@@ -32,6 +32,7 @@ namespace PersonalLogManagerClient
                 .AddScoped<ApiKeyService>()
                 .AddScoped<ApiKeyRateLimitService>()
                 .AddScoped<LocaleService>()
+                .AddScoped<PageTitleService>()
                 .AddScoped<PersonalLogService>();
         }
     }

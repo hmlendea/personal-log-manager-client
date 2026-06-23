@@ -1,10 +1,13 @@
 ﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject PageTitleService PageTitleService
 
 <div class="app-layout">
     <header class="top-bar">
         <div class="top-bar-auth">
             <ApiKeyWidget />
         </div>
+        <div class="top-bar-title">@PageTitleService.Title</div>
         <div class="top-bar-locale">
             <LocaleSelector />
         </div>
@@ -14,3 +17,12 @@
     </main>
     <AppFooter />
 </div>
+
+@code {
+    protected override void OnInitialized() =>
+        PageTitleService.OnChange += OnTitleChanged;
+
+    private void OnTitleChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => PageTitleService.OnChange -= OnTitleChanged;
+}
