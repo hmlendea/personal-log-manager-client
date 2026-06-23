@@ -10,5 +10,9 @@
         => await LocaleService.InitialiseAsync();
 
     private async Task OnChanged(ChangeEventArgs e)
-        => await LocaleService.SetLocaleAsync(e.Value?.ToString());
+    {
+        string selected = e.Value?.ToString();
+        if (selected == LocaleService.Current) return;
+        await LocaleService.SetLocaleAsync(selected);
+    }
 }
