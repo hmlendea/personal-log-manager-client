@@ -7,7 +7,7 @@
 <div class="entries-container">
     <div class="entries-header">
         <div class="entries-header-left">
-            <h2 class="entries-title">@(currentDate == today ? "Today's Entries" : "Entries")</h2>
+            <h2 class="entries-title">@(currentDate == today ? "Today" : currentDate == yesterday ? "Yesterday" : "Entries")</h2>
             <span class="entries-date">@currentDate</span>
         </div>
         <div class="entries-nav-controls">
@@ -53,6 +53,7 @@
 
 @code {
     private string today = DateTime.Today.ToString("yyyy-MM-dd");
+    private string yesterday = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
     private string currentDate = DateTime.Today.ToString("yyyy-MM-dd");
     private List<string> entries = [];
     private bool loading;
