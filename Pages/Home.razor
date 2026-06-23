@@ -8,7 +8,7 @@
 
 <PageTitle>Personal Log Manager</PageTitle>
 
-<div class="entries-container">
+<div class="entries-container @(fullWidth ? "is-full-width" : "")">
     <div class="entries-header">
         <div class="entries-header-controls">
             <div class="entries-nav-actions">
@@ -17,6 +17,9 @@
                 </button>
                 <button class="btn btn-sort" title="@(ascending ? L.SortAscending : L.SortDescending)" @onclick="ToggleOrder" disabled="@loading">
                     <i class="fa-solid @(ascending ? "fa-arrow-up-1-9" : "fa-arrow-down-9-1")"></i>
+                </button>
+                <button class="btn btn-fullwidth" title="@(fullWidth ? "Collapse" : "Expand")" @onclick="ToggleFullWidth">
+                    <i class="fa-solid @(fullWidth ? "fa-compress" : "fa-expand")"></i>
                 </button>
             </div>
             <div class="entries-nav-controls">
@@ -64,6 +67,7 @@
     private bool loading;
     private bool hasApiKey;
     private bool ascending = false;
+    private bool fullWidth = false;
     private string error;
 
     private LocalisationStrings L => LocaleService.Strings;
@@ -75,6 +79,8 @@
         LocaleService.OnChange += OnLocaleChanged;
         string stored = await JS.InvokeAsync<string>("localStorage.getItem", "sortAscending");
         ascending = stored == "true";
+        string storedFullWidth = await JS.InvokeAsync<string>("localStorage.getItem", "fullWidth");
+        fullWidth = storedFullWidth == "true";
         string key = await ApiKeyService.GetApiKeyAsync();
         hasApiKey = !string.IsNullOrEmpty(key);
         PageTitleService.SetTitle(CurrentTitle);
@@ -136,6 +142,12 @@
 
         await JS.InvokeVoidAsync("localStorage.setItem", "sortAscending", ascending.ToString().ToLower());
         await LoadEntries();
+    }
+
+    private async Task ToggleFullWidth()
+    {
+        fullWidth = !fullWidth;
+        await JS.InvokeVoidAsync("localStorage.setItem", "fullWidth", fullWidth.ToString().ToLower());
     }
 
     private async Task LoadEntries()
