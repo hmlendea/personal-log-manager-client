@@ -83,6 +83,23 @@ html, body {
     min-width: 0;
 }
 
+.top-bar-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.top-bar-locale {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+    min-width: 0;
+}
+
 .api-key-input {
     height: 32px;
     padding: 0 10px;
