@@ -8,29 +8,27 @@
 
 <PageTitle>Personal Log Manager</PageTitle>
 
-<div class="entries-container @(fullWidth ? "is-full-width" : "")">
-    <div class="entries-header">
-        <div class="entries-header-controls">
-            <div class="entries-nav-actions">
-                <button class="btn btn-refresh" title="@L.Refresh" @onclick="LoadEntries" disabled="@loading">
-                    <i class="fa-solid @(loading ? "fa-spinner fa-spin" : "fa-rotate-right")"></i>
-                </button>
-                <button class="btn btn-sort" title="@(ascending ? L.SortAscending : L.SortDescending)" @onclick="ToggleOrder" disabled="@loading">
-                    <i class="fa-solid @(ascending ? "fa-arrow-up-1-9" : "fa-arrow-down-9-1")"></i>
-                </button>
-                <button class="btn btn-fullwidth" title="@(fullWidth ? "Collapse" : "Expand")" @onclick="ToggleFullWidth">
-                    <i class="fa-solid @(fullWidth ? "fa-compress" : "fa-expand")"></i>
-                </button>
-            </div>
-            <div class="entries-nav-controls">
-                <button class="btn btn-nav" title="@L.PreviousDay" @onclick="GoToPreviousDay" disabled="@loading">&#8592;</button>
-                <CustomDatePicker Value="@currentDate" Max="@today" Disabled="@loading"
-                                  ValueChanged="OnDatePickerChanged" />
-                <button class="btn btn-nav" title="@L.NextDay" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
-            </div>
-        </div>
+<nav class="nav-bar">
+    <div class="entries-nav-actions">
+        <button class="btn btn-refresh" title="@L.Refresh" @onclick="LoadEntries" disabled="@loading">
+            <i class="fa-solid @(loading ? "fa-spinner fa-spin" : "fa-rotate-right")"></i>
+        </button>
+        <button class="btn btn-sort" title="@(ascending ? L.SortAscending : L.SortDescending)" @onclick="ToggleOrder" disabled="@loading">
+            <i class="fa-solid @(ascending ? "fa-arrow-up-1-9" : "fa-arrow-down-9-1")"></i>
+        </button>
+        <button class="btn btn-fullwidth" title="@(fullWidth ? "Collapse" : "Expand")" @onclick="ToggleFullWidth">
+            <i class="fa-solid @(fullWidth ? "fa-compress" : "fa-expand")"></i>
+        </button>
     </div>
+    <div class="entries-nav-controls">
+        <button class="btn btn-nav" title="@L.PreviousDay" @onclick="GoToPreviousDay" disabled="@loading">&#8592;</button>
+        <CustomDatePicker Value="@currentDate" Max="@today" Disabled="@loading"
+                          ValueChanged="OnDatePickerChanged" />
+        <button class="btn btn-nav" title="@L.NextDay" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
+    </div>
+</nav>
 
+<div class="entries-container @(fullWidth ? "is-full-width" : "")">
     @if (!hasApiKey)
     {
         <p class="entries-notice">@L.NoApiKeyNotice</p>
