@@ -3,6 +3,7 @@
 @inject PersonalLogService LogService
 @inject ApiKeyService ApiKeyService
 @inject LocaleService LocaleService
+@inject IJSRuntime JS
 
 <PageTitle>Personal Log Manager</PageTitle>
 
@@ -73,6 +74,8 @@
     protected override async Task OnInitializedAsync()
     {
         LocaleService.OnChange += OnLocaleChanged;
+        string stored = await JS.InvokeAsync<string>("localStorage.getItem", "sortAscending");
+        ascending = stored == "true";
         string key = await ApiKeyService.GetApiKeyAsync();
         hasApiKey = !string.IsNullOrEmpty(key);
         if (hasApiKey)
@@ -115,6 +118,7 @@
     private async Task ToggleOrder()
     {
         ascending = !ascending;
+        await JS.InvokeVoidAsync("localStorage.setItem", "sortAscending", ascending.ToString().ToLower());
         await LoadEntries();
     }
 
