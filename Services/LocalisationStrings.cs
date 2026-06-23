@@ -32,6 +32,10 @@ namespace PersonalLogManagerClient.Services
         public string NotFoundTitle { get; init; }
         public string NotFoundMessage { get; init; }
 
+        // Footer links
+        public string FooterApiSource { get; init; }
+        public string FooterClientSource { get; init; }
+
         public static readonly LocalisationStrings English = new()
         {
             TitleToday = "Today",
@@ -51,7 +55,9 @@ namespace PersonalLogManagerClient.Services
             ApiKeyPlaceholder = "Enter the API key…",
             Save = "Save",
             NotFoundTitle = "Not Found",
-            NotFoundMessage = "Sorry, the content you are looking for does not exist."
+            NotFoundMessage = "Sorry, the content you are looking for does not exist.",
+            FooterApiSource = "API Source",
+            FooterClientSource = "Client Source"
         };
 
         public static readonly LocalisationStrings Romanian = new()
@@ -73,7 +79,9 @@ namespace PersonalLogManagerClient.Services
             ApiKeyPlaceholder = "Introduceți cheia API…",
             Save = "Salvează",
             NotFoundTitle = "Pagina nu a fost găsită",
-            NotFoundMessage = "Ne pare rău, conținutul căutat nu există."
+            NotFoundMessage = "Ne pare rău, conținutul căutat nu există.",
+            FooterApiSource = "Sursă API",
+            FooterClientSource = "Sursă Client"
         };
     }
 }
