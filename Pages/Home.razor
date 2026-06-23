@@ -1,6 +1,8 @@
 ﻿@page "/"
+@implements IDisposable
 @inject PersonalLogService LogService
 @inject ApiKeyService ApiKeyService
+@inject LocaleService LocaleService
 
 <PageTitle>Personal Log Manager</PageTitle>
 
@@ -62,11 +64,20 @@
 
     protected override async Task OnInitializedAsync()
     {
+        LocaleService.OnChange += OnLocaleChanged;
         string key = await ApiKeyService.GetApiKeyAsync();
         hasApiKey = !string.IsNullOrEmpty(key);
         if (hasApiKey)
             await LoadEntries();
     }
+
+    private async void OnLocaleChanged()
+    {
+        await LoadEntries();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() => LocaleService.OnChange -= OnLocaleChanged;
 
     private async Task OnDatePickerChanged(ChangeEventArgs e)
     {
