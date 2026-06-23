@@ -15,7 +15,7 @@
                @onclick:stopPropagation />
         <span class="date-sep">/</span>
         <input class="date-part date-part-year"
-               type="number" min="2000" max="2099"
+               type="number" min="1995" max="2099"
                value="@_year"
                disabled="@Disabled"
                @onchange="OnYearChanged"
@@ -28,32 +28,82 @@
         <div class="date-calendar-overlay" @onclick="CloseCalendar"></div>
         <div class="date-calendar" @onclick:stopPropagation>
             <div class="calendar-header">
-                <button class="btn-cal-nav" @onclick="PrevMonth">&#8592;</button>
-                <span class="calendar-month-label">@_calMonth.ToString("MMMM yyyy")</span>
-                <button class="btn-cal-nav" @onclick="NextMonth" disabled="@IsNextMonthDisabled">&#8594;</button>
-            </div>
-            <div class="calendar-grid">
-                @foreach (var label in new[] { "L", "M", "M", "J", "V", "S", "D" })
+                @if (_showYearPicker)
                 {
-                    <span class="calendar-day-label">@label</span>
+                    <span class="calendar-month-label">Select Year</span>
                 }
-                @foreach (var cell in GetCells())
+                else if (_showMonthPicker)
                 {
-                    @if (cell == 0)
-                    {
-                        <span></span>
-                    }
-                    else
-                    {
-                        var date = new DateTime(_calMonth.Year, _calMonth.Month, cell);
-                        var isSel = _year == date.Year && _month == date.Month && _day == date.Day;
-                        var isFut = !string.IsNullOrEmpty(Max) && date > DateTime.Parse(Max);
-                        <button class="calendar-day @(isSel ? "is-selected" : "") @(isFut ? "is-future" : "")"
-                                disabled="@isFut"
-                                @onclick="() => SelectDay(date)">@cell</button>
-                    }
+                    <button class="btn-cal-nav" @onclick="PrevYear" disabled="@IsPrevYearDisabled">&#8592;</button>
+                    <button class="btn-cal-header" @onclick="OpenYearPicker">@_calMonth.Year</button>
+                    <button class="btn-cal-nav" @onclick="NextYear" disabled="@IsNextYearDisabled">&#8594;</button>
+                }
+                else
+                {
+                    <button class="btn-cal-nav" @onclick="PrevMonth" disabled="@IsPrevMonthDisabled">&#8592;</button>
+                    <span class="calendar-month-label">
+                        <button class="btn-cal-header" @onclick="OpenMonthPicker">@_calMonth.ToString("MMMM")</button>
+                        <button class="btn-cal-header" @onclick="OpenYearPicker">@_calMonth.Year</button>
+                    </span>
+                    <button class="btn-cal-nav" @onclick="NextMonth" disabled="@IsNextMonthDisabled">&#8594;</button>
                 }
             </div>
+
+            @if (_showMonthPicker)
+            {
+                <div class="calendar-month-grid">
+                    @for (int m = 1; m <= 12; m++)
+                    {
+                        var month = m;
+                        var isSelMonth = _calMonth.Month == month;
+                        var isFutMonth = IsMonthFuture(month, _calMonth.Year);
+                        <button class="calendar-month-btn @(isSelMonth ? "is-selected" : "") @(isFutMonth ? "is-future" : "")"
+                                disabled="@isFutMonth"
+                                @onclick="() => SelectMonth(month)">
+                            @(new DateTime(_calMonth.Year, month, 1).ToString("MMM"))
+                        </button>
+                    }
+                </div>
+            }
+            else if (_showYearPicker)
+            {
+                <div class="calendar-year-grid">
+                    @foreach (var y in GetSelectableYears())
+                    {
+                        var year = y;
+                        var isSelYear = _calMonth.Year == year;
+                        <button class="calendar-year-btn @(isSelYear ? "is-selected" : "")"
+                                @onclick="() => SelectYear(year)">
+                            @year
+                        </button>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="calendar-grid">
+                    @foreach (var label in new[] { "L", "M", "M", "J", "V", "S", "D" })
+                    {
+                        <span class="calendar-day-label">@label</span>
+                    }
+                    @foreach (var cell in GetCells())
+                    {
+                        @if (cell == 0)
+                        {
+                            <span></span>
+                        }
+                        else
+                        {
+                            var date = new DateTime(_calMonth.Year, _calMonth.Month, cell);
+                            var isSel = _year == date.Year && _month == date.Month && _day == date.Day;
+                            var isFut = !string.IsNullOrEmpty(Max) && date > DateTime.Parse(Max);
+                            <button class="calendar-day @(isSel ? "is-selected" : "") @(isFut ? "is-future" : "")"
+                                    disabled="@isFut"
+                                    @onclick="() => SelectDay(date)">@cell</button>
+                        }
+                    }
+                </div>
+            }
         </div>
     }
 </div>
@@ -66,6 +116,8 @@
 
     private int _day, _month, _year;
     private bool _calendarOpen;
+    private bool _showMonthPicker;
+    private bool _showYearPicker;
     private DateTime _calMonth;
 
     protected override void OnParametersSet()
@@ -82,23 +134,74 @@
     {
         if (Disabled) return;
         if (!_calendarOpen)
-            _calMonth = new DateTime(_year, _month, 1);
+        {
+            _calMonth = new DateTime(_year > 0 && _month > 0 ? _year : DateTime.Now.Year,
+                                     _month > 0 ? _month : DateTime.Now.Month, 1);
+            _showMonthPicker = false;
+            _showYearPicker = false;
+        }
         _calendarOpen = !_calendarOpen;
     }
 
-    private void CloseCalendar() => _calendarOpen = false;
+    private void CloseCalendar()
+    {
+        _calendarOpen = false;
+        _showMonthPicker = false;
+        _showYearPicker = false;
+    }
+
+    private void OpenMonthPicker() { _showMonthPicker = true; _showYearPicker = false; }
+    private void OpenYearPicker()  { _showYearPicker = true; _showMonthPicker = false; }
 
     private void PrevMonth() => _calMonth = _calMonth.AddMonths(-1);
-
     private void NextMonth() => _calMonth = _calMonth.AddMonths(1);
+    private void PrevYear()  => _calMonth = _calMonth.AddYears(-1);
+    private void NextYear()  => _calMonth = _calMonth.AddYears(1);
 
+    private bool IsPrevMonthDisabled => _calMonth <= new DateTime(1995, 1, 1);
     private bool IsNextMonthDisabled => !string.IsNullOrEmpty(Max) &&
         _calMonth.AddMonths(1) > DateTime.Parse(Max);
+    private bool IsPrevYearDisabled  => _calMonth.Year <= 1995;
+    private bool IsNextYearDisabled  => string.IsNullOrEmpty(Max)
+        ? _calMonth.Year >= DateTime.Now.Year
+        : _calMonth.Year >= DateTime.Parse(Max).Year;
+
+    private IEnumerable<int> GetSelectableYears()
+    {
+        int maxYear = string.IsNullOrEmpty(Max) ? DateTime.Now.Year : DateTime.Parse(Max).Year;
+        for (int y = maxYear; y >= 1995; y--) yield return y;
+    }
+
+    private bool IsMonthFuture(int month, int year)
+    {
+        if (string.IsNullOrEmpty(Max)) return false;
+        var maxDate = DateTime.Parse(Max);
+        return new DateTime(year, month, 1) > new DateTime(maxDate.Year, maxDate.Month, 1);
+    }
+
+    private void SelectMonth(int month)
+    {
+        _calMonth = new DateTime(_calMonth.Year, month, 1);
+        _showMonthPicker = false;
+    }
+
+    private void SelectYear(int year)
+    {
+        int month = _calMonth.Month;
+        if (!string.IsNullOrEmpty(Max))
+        {
+            var maxDate = DateTime.Parse(Max);
+            if (year == maxDate.Year && month > maxDate.Month)
+                month = maxDate.Month;
+        }
+        _calMonth = new DateTime(year, month, 1);
+        _showYearPicker = false;
+        _showMonthPicker = true;
+    }
 
     private IEnumerable<int> GetCells()
     {
         int daysInMonth = DateTime.DaysInMonth(_calMonth.Year, _calMonth.Month);
-        // Monday=0 offset
         int offset = ((int)new DateTime(_calMonth.Year, _calMonth.Month, 1).DayOfWeek + 6) % 7;
         for (int i = 0; i < offset; i++) yield return 0;
         for (int d = 1; d <= daysInMonth; d++) yield return d;
@@ -127,7 +230,7 @@
 
     private async Task OnYearChanged(ChangeEventArgs e)
     {
-        if (int.TryParse(e.Value?.ToString(), out int v)) _year = Math.Clamp(v, 2000, 2099);
+        if (int.TryParse(e.Value?.ToString(), out int v)) _year = Math.Clamp(v, 1995, 2099);
         await EmitIfValid();
     }
 
