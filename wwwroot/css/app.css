@@ -246,7 +246,7 @@ html, body {
 /* ── Entries list ───────────────────────────────────── */
 
 .entries-container {
-    max-width: 860px;
+    max-width: 1024px;
     margin: 0 auto;
 }
 
