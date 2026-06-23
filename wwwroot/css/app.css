@@ -134,6 +134,7 @@ html, body {
 .locale-select {
     height: 32px;
     padding: 0 8px;
+    width: 120px;
     background: var(--input-bg);
     border: 1px solid var(--input-border);
     border-radius: 6px;
@@ -293,10 +294,10 @@ html, body {
         border-bottom: none;
         pointer-events: none;
         z-index: 101;
-        /* Left padding clears: 16px bar-padding + 32px auth-btn + 12px buffer */
-        padding-left: 60px;
-        /* Right padding clears: 16px bar-padding + ~140px locale-select + 9px buffer */
-        padding-right: 165px;
+        /* 16px bar-padding + 32px auth-btn + 8px flex-gap */
+        padding-left: 56px;
+        /* 16px bar-padding + 120px locale-select + 8px flex-gap */
+        padding-right: 144px;
     }
 
     .nav-bar > * {
