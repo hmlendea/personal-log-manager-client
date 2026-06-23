@@ -19,8 +19,8 @@
             <button class="btn btn-nav" title="@L.NextDay" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
         </div>
         <div class="entries-nav-actions">
-            <button class="btn btn-refresh" @onclick="LoadEntries" disabled="@loading">
-                @(loading ? L.Loading : L.Refresh)
+            <button class="btn btn-refresh" title="@L.Refresh" @onclick="LoadEntries" disabled="@loading">
+                <i class="fa-solid @(loading ? "fa-spinner fa-spin" : "fa-rotate-right")"></i>
             </button>
         </div>
     </div>

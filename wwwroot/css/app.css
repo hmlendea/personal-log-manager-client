@@ -325,6 +325,9 @@ html, body {
     background: transparent;
     color: var(--accent);
     border: 1px solid var(--accent);
+    width: 32px;
+    padding: 0;
+    justify-content: center;
 }
 
 .btn-refresh:hover:not(:disabled) {
