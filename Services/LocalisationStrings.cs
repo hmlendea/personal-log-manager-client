@@ -19,6 +19,8 @@ namespace PersonalLogManagerClient.Services
         public string NoApiKeyNotice { get; init; }
         public Func<string, string> NoEntries { get; init; }
         public Func<int, string> LogEntries { get; init; }
+        public string InvalidApiKey { get; init; }
+        public Func<DateTime, string> LockedOut { get; init; }
 
         // API key widget
         public string ApiKeySet { get; init; }
@@ -42,6 +44,8 @@ namespace PersonalLogManagerClient.Services
             NoApiKeyNotice = "Set an API key in the top bar to load entries.",
             NoEntries = date => $"No entries for {date}.",
             LogEntries = count => $"{count} log entries",
+            InvalidApiKey = "Invalid API key.",
+            LockedOut = until => $"Too many failed attempts. Requests blocked until {until:HH:mm}.",
             ApiKeySet = "API key set",
             ClearKey = "Clear Key",
             ApiKeyPlaceholder = "Enter the API key…",
@@ -62,6 +66,8 @@ namespace PersonalLogManagerClient.Services
             NoApiKeyNotice = "Setați o cheie API în bara de sus pentru a încărca intrările.",
             NoEntries = date => $"Nu există intrări pentru {date}.",
             LogEntries = count => $"{count} intrări în jurnal",
+            InvalidApiKey = "Cheie API invalidă.",
+            LockedOut = until => $"Prea multe încercări eșuate. Cererile sunt blocate până la {until:HH:mm}.",
             ApiKeySet = "Cheie API setată",
             ClearKey = "Șterge cheia",
             ApiKeyPlaceholder = "Introduceți cheia API…",

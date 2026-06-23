@@ -30,6 +30,7 @@ namespace PersonalLogManagerClient
                 .AddScoped<INuciApiClient>(sp => new NuciApiClient(
                     sp.GetRequiredService<PersonalLogManagerSettings>().BaseUrl ?? "http://localhost:5000"))
                 .AddScoped<ApiKeyService>()
+                .AddScoped<ApiKeyRateLimitService>()
                 .AddScoped<LocaleService>()
                 .AddScoped<PersonalLogService>();
         }
