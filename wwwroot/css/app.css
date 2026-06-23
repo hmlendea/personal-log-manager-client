@@ -269,6 +269,41 @@ html, body {
     gap: 8px;
 }
 
+@media (min-width: 768px) {
+    :root {
+        --nav-bar-height: 0px;
+    }
+
+    .top-bar-auth {
+        flex: 0 0 auto;
+    }
+
+    .top-bar-title {
+        flex: 1;
+    }
+
+    .top-bar-locale {
+        flex: 0 0 auto;
+    }
+
+    .nav-bar {
+        top: 0;
+        height: var(--bar-height);
+        background: transparent;
+        border-bottom: none;
+        pointer-events: none;
+        z-index: 101;
+        /* Left padding clears: 16px bar-padding + 32px auth-btn + 12px buffer */
+        padding-left: 60px;
+        /* Right padding clears: 16px bar-padding + ~140px locale-select + 9px buffer */
+        padding-right: 165px;
+    }
+
+    .nav-bar > * {
+        pointer-events: auto;
+    }
+}
+
 .entries-header {
     display: flex;
     align-items: center;
