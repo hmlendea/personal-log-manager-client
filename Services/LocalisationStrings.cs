@@ -1,0 +1,73 @@
+using System;
+
+namespace PersonalLogManagerClient.Services
+{
+    public sealed class LocalisationStrings
+    {
+        // Page title / navigation
+        public string TitleToday { get; init; }
+        public string TitleYesterday { get; init; }
+        public string TitleEntries { get; init; }
+        public string PreviousDay { get; init; }
+        public string NextDay { get; init; }
+
+        // Buttons / status
+        public string Loading { get; init; }
+        public string Refresh { get; init; }
+
+        // Notices
+        public string NoApiKeyNotice { get; init; }
+        public Func<string, string> NoEntries { get; init; }
+        public Func<int, string> LogEntries { get; init; }
+
+        // API key widget
+        public string ApiKeySet { get; init; }
+        public string ClearKey { get; init; }
+        public string ApiKeyPlaceholder { get; init; }
+        public string Save { get; init; }
+
+        // Not Found page
+        public string NotFoundTitle { get; init; }
+        public string NotFoundMessage { get; init; }
+
+        public static readonly LocalisationStrings English = new()
+        {
+            TitleToday = "Today",
+            TitleYesterday = "Yesterday",
+            TitleEntries = "Entries",
+            PreviousDay = "Previous day",
+            NextDay = "Next day",
+            Loading = "Loading…",
+            Refresh = "Refresh",
+            NoApiKeyNotice = "Set an API key in the top bar to load entries.",
+            NoEntries = date => $"No entries for {date}.",
+            LogEntries = count => $"{count} log entries",
+            ApiKeySet = "API key set",
+            ClearKey = "Clear Key",
+            ApiKeyPlaceholder = "Enter the API key…",
+            Save = "Save",
+            NotFoundTitle = "Not Found",
+            NotFoundMessage = "Sorry, the content you are looking for does not exist."
+        };
+
+        public static readonly LocalisationStrings Romanian = new()
+        {
+            TitleToday = "Astăzi",
+            TitleYesterday = "Ieri",
+            TitleEntries = "Intrări",
+            PreviousDay = "Ziua anterioară",
+            NextDay = "Ziua următoare",
+            Loading = "Se încarcă…",
+            Refresh = "Reîncarcă",
+            NoApiKeyNotice = "Setați o cheie API în bara de sus pentru a încărca intrările.",
+            NoEntries = date => $"Nu există intrări pentru {date}.",
+            LogEntries = count => $"{count} intrări în jurnal",
+            ApiKeySet = "Cheie API setată",
+            ClearKey = "Șterge cheia",
+            ApiKeyPlaceholder = "Introduceți cheia API…",
+            Save = "Salvează",
+            NotFoundTitle = "Pagina nu a fost găsită",
+            NotFoundMessage = "Ne pare rău, conținutul căutat nu există."
+        };
+    }
+}

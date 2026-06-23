@@ -10,17 +10,19 @@ using PersonalLogManagerClient.Models;
 
 namespace PersonalLogManagerClient.Services
 {
-    public class PersonalLogService(INuciApiClient client, ApiKeyService apiKeyService)
+    public class PersonalLogService(INuciApiClient client, ApiKeyService apiKeyService, LocaleService localeService)
     {
         private readonly INuciApiClient client = client;
         private readonly ApiKeyService apiKeyService = apiKeyService;
+        private readonly LocaleService localeService = localeService;
 
         // Matches: leading log ID (L + digits + space) and date (yyyy-MM-dd: )
         private static readonly Regex trimPattern =
             new(@"^L\d+\s+\d{4}-\d{2}-\d{2}:\s*", RegexOptions.Compiled);
 
-        public async Task<List<string>> GetLogsForDateAsync(string date, int count = 1000, string localisation = "ro")
+        public async Task<List<string>> GetLogsForDateAsync(string date, int count = 1000)
         {
+            string localisation = localeService.Current == LocaleService.Romanian ? "ro" : "en";
             string apiKey = await apiKeyService.GetApiKeyAsync();
 
             GetLogsRequest request = new()

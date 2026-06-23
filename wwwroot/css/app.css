@@ -99,6 +99,23 @@ html, body {
     white-space: nowrap;
 }
 
+.locale-select {
+    height: 32px;
+    padding: 0 8px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.locale-select:focus {
+    border-color: var(--input-border-focus);
+}
+
 .btn {
     display: inline-flex;
     align-items: center;

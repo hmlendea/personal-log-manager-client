@@ -1,34 +1,42 @@
+@implements IDisposable
 @inject ApiKeyService ApiKeyService
+@inject LocaleService LocaleService
 
 @if (hasKey)
 {
-    <span class="api-key-set-label">API key set</span>
-    <button class="btn btn-clear-key" @onclick="ClearKey">Clear Key</button>
+    <span class="api-key-set-label">@L.ApiKeySet</span>
+    <button class="btn btn-clear-key" @onclick="ClearKey">@L.ClearKey</button>
 }
 else
 {
     <input @ref="inputRef"
            type="password"
            class="api-key-input"
-           placeholder="Enter the API key…"
+           placeholder="@L.ApiKeyPlaceholder"
            autocomplete="off"
            spellcheck="false"
            @bind="inputValue"
            @bind:event="oninput"
            @onkeydown="OnKeyDown" />
-    <button class="btn btn-save-key" @onclick="SaveKey">Save</button>
+    <button class="btn btn-save-key" @onclick="SaveKey">@L.Save</button>
 }
 
 @code {
     private bool hasKey;
     private string inputValue = "";
     private ElementReference inputRef;
+    private LocalisationStrings L => LocaleService.Strings;
 
     protected override async Task OnInitializedAsync()
     {
+        LocaleService.OnChange += OnLocaleChanged;
         string key = await ApiKeyService.GetApiKeyAsync();
         hasKey = !string.IsNullOrEmpty(key);
     }
+
+    private void OnLocaleChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => LocaleService.OnChange -= OnLocaleChanged;
 
     private async Task SaveKey()
     {
