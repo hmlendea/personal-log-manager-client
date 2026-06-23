@@ -11,19 +11,19 @@
 <div class="entries-container">
     <div class="entries-header">
         <div class="entries-header-controls">
+            <div class="entries-nav-actions">
+                <button class="btn btn-refresh" title="@L.Refresh" @onclick="LoadEntries" disabled="@loading">
+                    <i class="fa-solid @(loading ? "fa-spinner fa-spin" : "fa-rotate-right")"></i>
+                </button>
+                <button class="btn btn-sort" title="@(ascending ? L.SortAscending : L.SortDescending)" @onclick="ToggleOrder" disabled="@loading">
+                    <i class="fa-solid @(ascending ? "fa-arrow-up-1-9" : "fa-arrow-down-9-1")"></i>
+                </button>
+            </div>
             <div class="entries-nav-controls">
                 <button class="btn btn-nav" title="@L.PreviousDay" @onclick="GoToPreviousDay" disabled="@loading">&#8592;</button>
                 <CustomDatePicker Value="@currentDate" Max="@today" Disabled="@loading"
                                   ValueChanged="OnDatePickerChanged" />
                 <button class="btn btn-nav" title="@L.NextDay" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
-            </div>
-            <div class="entries-nav-actions">
-                <button class="btn btn-sort" title="@(ascending ? L.SortAscending : L.SortDescending)" @onclick="ToggleOrder" disabled="@loading">
-                    <i class="fa-solid @(ascending ? "fa-arrow-up-1-9" : "fa-arrow-down-9-1")"></i>
-                </button>
-                <button class="btn btn-refresh" title="@L.Refresh" @onclick="LoadEntries" disabled="@loading">
-                    <i class="fa-solid @(loading ? "fa-spinner fa-spin" : "fa-rotate-right")"></i>
-                </button>
             </div>
         </div>
     </div>
