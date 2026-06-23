@@ -16,6 +16,8 @@ namespace PersonalLogManagerClient.Services
 
         public string Current => _current ?? Romanian;
 
+        public LocalisationStrings Strings => Current == Romanian ? LocalisationStrings.Romanian : LocalisationStrings.English;
+
         public async Task InitialiseAsync()
         {
             string stored = await js.InvokeAsync<string>("localStorage.getItem", StorageKey);
