@@ -8,6 +8,7 @@
 
 :root {
     --bar-height: 48px;
+    --nav-bar-height: 48px;
     --bar-bg: #1e1e2e;
     --bar-border: #313244;
     --accent: #89b4fa;
@@ -193,11 +194,13 @@ html, body {
 .page-content {
     flex: 1;
     padding: 24px;
+    padding-top: calc(var(--nav-bar-height) + 24px);
 }
 
 @media (max-width: 480px) {
     .page-content {
         padding: 12px 8px;
+        padding-top: calc(var(--nav-bar-height) + 12px);
     }
 
     .entries-header {
@@ -250,6 +253,22 @@ html, body {
     margin: 0 auto;
 }
 
+.nav-bar {
+    position: fixed;
+    top: var(--bar-height);
+    left: 0;
+    right: 0;
+    height: var(--nav-bar-height);
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: var(--bar-bg);
+    border-bottom: 1px solid var(--bar-border);
+    gap: 8px;
+}
+
 .entries-header {
     display: flex;
     align-items: center;
@@ -271,8 +290,8 @@ html, body {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    flex-wrap: wrap;
     width: 100%;
+    overflow-x: auto;
 }
 
 .entries-title {
