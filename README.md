@@ -24,6 +24,10 @@ Features:
 - Navigate between days using previous/next buttons or a date picker
 - Entries are displayed in reverse chronological order
 - API key authentication stored in browser local storage
+- Localisation support: English and Romanian
+- Rate limiting: API key input is blocked for 30 minutes after 5 failed attempts within 10 minutes
+- Installable as a Progressive Web App (PWA) — works on desktop and mobile, including iPhone via Safari
+- Offline-capable via service worker caching
 
 ## Requirements
 
