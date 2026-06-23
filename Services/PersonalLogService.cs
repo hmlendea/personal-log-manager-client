@@ -21,7 +21,7 @@ namespace PersonalLogManagerClient.Services
         private static readonly Regex trimPattern =
             new(@"^L\d+\s+\d{4}-\d{2}-\d{2}:\s*", RegexOptions.Compiled);
 
-        public async Task<List<string>> GetLogsForDateAsync(string date, int count = 1000)
+        public async Task<List<string>> GetLogsForDateAsync(string date, int count = 1000, bool ascending = false)
         {
             if (rateLimitService.IsLocked)
             {
@@ -63,7 +63,8 @@ namespace PersonalLogManagerClient.Services
 
             if (response is GetLogsResponse logsResponse)
             {
-                return [.. (logsResponse.Logs ?? []).Select(entry => trimPattern.Replace(entry, "")).Reverse()];
+                IEnumerable<string> logs = (logsResponse.Logs ?? []).Select(entry => trimPattern.Replace(entry, ""));
+                return ascending ? [.. logs] : [.. logs.Reverse()];
             }
 
             return [];

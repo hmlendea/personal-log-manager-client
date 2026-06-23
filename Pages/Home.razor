@@ -3,6 +3,7 @@
 @inject PersonalLogService LogService
 @inject ApiKeyService ApiKeyService
 @inject LocaleService LocaleService
+@inject IJSRuntime JS
 
 <PageTitle>Personal Log Manager</PageTitle>
 
@@ -12,16 +13,21 @@
             <h2 class="entries-title">@(currentDate == today ? L.TitleToday : currentDate == yesterday ? L.TitleYesterday : L.TitleEntries)</h2>
             <span class="entries-date">@currentDate</span>
         </div>
-        <div class="entries-nav-controls">
-            <button class="btn btn-nav" title="@L.PreviousDay" @onclick="GoToPreviousDay" disabled="@loading">&#8592;</button>
-            <input type="date" class="date-picker" value="@currentDate" max="@today"
-                   @onchange="OnDatePickerChanged" disabled="@loading" />
-            <button class="btn btn-nav" title="@L.NextDay" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
-        </div>
-        <div class="entries-nav-actions">
-            <button class="btn btn-refresh" title="@L.Refresh" @onclick="LoadEntries" disabled="@loading">
-                <i class="fa-solid @(loading ? "fa-spinner fa-spin" : "fa-rotate-right")"></i>
-            </button>
+        <div class="entries-header-controls">
+            <div class="entries-nav-controls">
+                <button class="btn btn-nav" title="@L.PreviousDay" @onclick="GoToPreviousDay" disabled="@loading">&#8592;</button>
+                <CustomDatePicker Value="@currentDate" Max="@today" Disabled="@loading"
+                                  ValueChanged="OnDatePickerChanged" />
+                <button class="btn btn-nav" title="@L.NextDay" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
+            </div>
+            <div class="entries-nav-actions">
+                <button class="btn btn-sort" title="@(ascending ? L.SortAscending : L.SortDescending)" @onclick="ToggleOrder" disabled="@loading">
+                    <i class="fa-solid @(ascending ? "fa-arrow-up-1-9" : "fa-arrow-down-9-1")"></i>
+                </button>
+                <button class="btn btn-refresh" title="@L.Refresh" @onclick="LoadEntries" disabled="@loading">
+                    <i class="fa-solid @(loading ? "fa-spinner fa-spin" : "fa-rotate-right")"></i>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -60,6 +66,7 @@
     private List<string> entries = [];
     private bool loading;
     private bool hasApiKey;
+    private bool ascending = false;
     private string error;
 
     private LocalisationStrings L => LocaleService.Strings;
@@ -67,6 +74,8 @@
     protected override async Task OnInitializedAsync()
     {
         LocaleService.OnChange += OnLocaleChanged;
+        string stored = await JS.InvokeAsync<string>("localStorage.getItem", "sortAscending");
+        ascending = stored == "true";
         string key = await ApiKeyService.GetApiKeyAsync();
         hasApiKey = !string.IsNullOrEmpty(key);
         if (hasApiKey)
@@ -81,9 +90,8 @@
 
     public void Dispose() => LocaleService.OnChange -= OnLocaleChanged;
 
-    private async Task OnDatePickerChanged(ChangeEventArgs e)
+    private async Task OnDatePickerChanged(string picked)
     {
-        string picked = e.Value?.ToString();
         if (string.IsNullOrEmpty(picked) || picked == currentDate || string.Compare(picked, today) > 0)
             return;
 
@@ -107,6 +115,13 @@
         await LoadEntries();
     }
 
+    private async Task ToggleOrder()
+    {
+        ascending = !ascending;
+        await JS.InvokeVoidAsync("localStorage.setItem", "sortAscending", ascending.ToString().ToLower());
+        await LoadEntries();
+    }
+
     private async Task LoadEntries()
     {
         string key = await ApiKeyService.GetApiKeyAsync();
@@ -119,7 +134,7 @@
 
         try
         {
-            entries = await LogService.GetLogsForDateAsync(currentDate);
+            entries = await LogService.GetLogsForDateAsync(currentDate, ascending: ascending);
         }
         catch (Exception ex)
         {

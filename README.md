@@ -22,7 +22,8 @@ Personal Log Manager Client is a self-hosted web application that connects to a 
 Features:
 - Browse log entries for any past date or today
 - Navigate between days using previous/next buttons or a date picker
-- Entries are displayed in reverse chronological order
+- Configurable sort order: ascending or descending chronological order
+- Entries count shown below the list
 - API key authentication stored in browser local storage
 - Localisation support: English and Romanian
 - Rate limiting: API key input is blocked for 30 minutes after 5 failed attempts within 10 minutes

@@ -1,0 +1,144 @@
+<div class="date-picker-wrapper">
+    <div class="date-picker-custom @(Disabled ? "is-disabled" : "")" @onclick="ToggleCalendar">
+        <input class="date-part date-part-day"
+               type="number" min="1" max="31"
+               value="@_day"
+               disabled="@Disabled"
+               @onchange="OnDayChanged"
+               @onclick:stopPropagation />
+        <span class="date-sep">/</span>
+        <input class="date-part date-part-month"
+               type="number" min="1" max="12"
+               value="@_month"
+               disabled="@Disabled"
+               @onchange="OnMonthChanged"
+               @onclick:stopPropagation />
+        <span class="date-sep">/</span>
+        <input class="date-part date-part-year"
+               type="number" min="2000" max="2099"
+               value="@_year"
+               disabled="@Disabled"
+               @onchange="OnYearChanged"
+               @onclick:stopPropagation />
+        <i class="fa-regular fa-calendar date-cal-icon" @onclick:stopPropagation></i>
+    </div>
+
+    @if (_calendarOpen && !Disabled)
+    {
+        <div class="date-calendar-overlay" @onclick="CloseCalendar"></div>
+        <div class="date-calendar" @onclick:stopPropagation>
+            <div class="calendar-header">
+                <button class="btn-cal-nav" @onclick="PrevMonth">&#8592;</button>
+                <span class="calendar-month-label">@_calMonth.ToString("MMMM yyyy")</span>
+                <button class="btn-cal-nav" @onclick="NextMonth" disabled="@IsNextMonthDisabled">&#8594;</button>
+            </div>
+            <div class="calendar-grid">
+                @foreach (var label in new[] { "L", "M", "M", "J", "V", "S", "D" })
+                {
+                    <span class="calendar-day-label">@label</span>
+                }
+                @foreach (var cell in GetCells())
+                {
+                    @if (cell == 0)
+                    {
+                        <span></span>
+                    }
+                    else
+                    {
+                        var date = new DateTime(_calMonth.Year, _calMonth.Month, cell);
+                        var isSel = _year == date.Year && _month == date.Month && _day == date.Day;
+                        var isFut = !string.IsNullOrEmpty(Max) && date > DateTime.Parse(Max);
+                        <button class="calendar-day @(isSel ? "is-selected" : "") @(isFut ? "is-future" : "")"
+                                disabled="@isFut"
+                                @onclick="() => SelectDay(date)">@cell</button>
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; }
+    [Parameter] public string Max { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    private int _day, _month, _year;
+    private bool _calendarOpen;
+    private DateTime _calMonth;
+
+    protected override void OnParametersSet()
+    {
+        if (DateTime.TryParse(Value, out DateTime d))
+        {
+            _day   = d.Day;
+            _month = d.Month;
+            _year  = d.Year;
+        }
+    }
+
+    private void ToggleCalendar()
+    {
+        if (Disabled) return;
+        if (!_calendarOpen)
+            _calMonth = new DateTime(_year, _month, 1);
+        _calendarOpen = !_calendarOpen;
+    }
+
+    private void CloseCalendar() => _calendarOpen = false;
+
+    private void PrevMonth() => _calMonth = _calMonth.AddMonths(-1);
+
+    private void NextMonth() => _calMonth = _calMonth.AddMonths(1);
+
+    private bool IsNextMonthDisabled => !string.IsNullOrEmpty(Max) &&
+        _calMonth.AddMonths(1) > DateTime.Parse(Max);
+
+    private IEnumerable<int> GetCells()
+    {
+        int daysInMonth = DateTime.DaysInMonth(_calMonth.Year, _calMonth.Month);
+        // Monday=0 offset
+        int offset = ((int)new DateTime(_calMonth.Year, _calMonth.Month, 1).DayOfWeek + 6) % 7;
+        for (int i = 0; i < offset; i++) yield return 0;
+        for (int d = 1; d <= daysInMonth; d++) yield return d;
+    }
+
+    private async Task SelectDay(DateTime date)
+    {
+        _day   = date.Day;
+        _month = date.Month;
+        _year  = date.Year;
+        _calendarOpen = false;
+        await ValueChanged.InvokeAsync(date.ToString("yyyy-MM-dd"));
+    }
+
+    private async Task OnDayChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int v)) _day = Math.Clamp(v, 1, 31);
+        await EmitIfValid();
+    }
+
+    private async Task OnMonthChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int v)) _month = Math.Clamp(v, 1, 12);
+        await EmitIfValid();
+    }
+
+    private async Task OnYearChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int v)) _year = Math.Clamp(v, 2000, 2099);
+        await EmitIfValid();
+    }
+
+    private async Task EmitIfValid()
+    {
+        if (!DateTime.TryParse($"{_year:D4}-{_month:D2}-{_day:D2}", out DateTime result))
+            return;
+
+        string iso = result.ToString("yyyy-MM-dd");
+        if (!string.IsNullOrEmpty(Max) && string.Compare(iso, Max) > 0) return;
+        if (iso != Value)
+            await ValueChanged.InvokeAsync(iso);
+    }
+}
