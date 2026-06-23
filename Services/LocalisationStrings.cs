@@ -23,7 +23,6 @@ namespace PersonalLogManagerClient.Services
         public Func<DateTime, string> LockedOut { get; init; }
 
         // API key widget
-        public string ApiKeySet { get; init; }
         public string ClearKey { get; init; }
         public string ApiKeyPlaceholder { get; init; }
         public string Save { get; init; }
@@ -31,6 +30,10 @@ namespace PersonalLogManagerClient.Services
         // Not Found page
         public string NotFoundTitle { get; init; }
         public string NotFoundMessage { get; init; }
+
+        // Footer links
+        public string FooterApiSource { get; init; }
+        public string FooterClientSource { get; init; }
 
         public static readonly LocalisationStrings English = new()
         {
@@ -46,12 +49,13 @@ namespace PersonalLogManagerClient.Services
             LogEntries = count => $"{count} log entries",
             InvalidApiKey = "Invalid API key.",
             LockedOut = until => $"Too many failed attempts. Requests blocked until {until:HH:mm}.",
-            ApiKeySet = "API key set",
             ClearKey = "Clear Key",
             ApiKeyPlaceholder = "Enter the API key…",
             Save = "Save",
             NotFoundTitle = "Not Found",
-            NotFoundMessage = "Sorry, the content you are looking for does not exist."
+            NotFoundMessage = "Sorry, the content you are looking for does not exist.",
+            FooterApiSource = "API Source",
+            FooterClientSource = "Client Source"
         };
 
         public static readonly LocalisationStrings Romanian = new()
@@ -68,12 +72,13 @@ namespace PersonalLogManagerClient.Services
             LogEntries = count => $"{count} intrări în jurnal",
             InvalidApiKey = "Cheie API invalidă.",
             LockedOut = until => $"Prea multe încercări eșuate. Cererile sunt blocate până la {until:HH:mm}.",
-            ApiKeySet = "Cheie API setată",
             ClearKey = "Șterge cheia",
             ApiKeyPlaceholder = "Introduceți cheia API…",
             Save = "Salvează",
             NotFoundTitle = "Pagina nu a fost găsită",
-            NotFoundMessage = "Ne pare rău, conținutul căutat nu există."
+            NotFoundMessage = "Ne pare rău, conținutul căutat nu există.",
+            FooterApiSource = "Sursă API",
+            FooterClientSource = "Sursă Client"
         };
     }
 }

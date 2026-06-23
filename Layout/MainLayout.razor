@@ -2,13 +2,15 @@
 
 <div class="app-layout">
     <header class="top-bar">
-        <a class="top-bar-brand" href="https://github.com/hmlendea/personal-log-manager" target="_blank" rel="noopener noreferrer">Personal Log<span class="top-bar-brand-line2"> Manager</span></a>
         <div class="top-bar-auth">
-            <LocaleSelector />
             <ApiKeyWidget />
+        </div>
+        <div class="top-bar-locale">
+            <LocaleSelector />
         </div>
     </header>
     <main class="page-content">
         @Body
     </main>
+    <AppFooter />
 </div>

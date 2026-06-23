@@ -1,0 +1,20 @@
+@implements IDisposable
+@inject LocaleService LocaleService
+
+<footer class="app-footer">
+    <nav class="footer-links">
+        <a class="footer-link" href="https://github.com/hmlendea/personal-log-manager" target="_blank" rel="noopener noreferrer">@L.FooterApiSource</a>
+        <a class="footer-link" href="https://github.com/hmlendea/personal-log-manager-client" target="_blank" rel="noopener noreferrer">@L.FooterClientSource</a>
+    </nav>
+</footer>
+
+@code {
+    private LocalisationStrings L => LocaleService.Strings;
+
+    protected override void OnInitialized()
+        => LocaleService.OnChange += OnLocaleChanged;
+
+    private void OnLocaleChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => LocaleService.OnChange -= OnLocaleChanged;
+}
