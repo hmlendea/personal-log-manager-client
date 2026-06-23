@@ -19,6 +19,9 @@
             <button class="btn btn-nav" title="@L.NextDay" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
         </div>
         <div class="entries-nav-actions">
+            <button class="btn btn-sort" title="@(ascending ? L.SortAscending : L.SortDescending)" @onclick="ToggleOrder" disabled="@loading">
+                <i class="fa-solid @(ascending ? "fa-arrow-up-1-9" : "fa-arrow-down-9-1")"></i>
+            </button>
             <button class="btn btn-refresh" title="@L.Refresh" @onclick="LoadEntries" disabled="@loading">
                 <i class="fa-solid @(loading ? "fa-spinner fa-spin" : "fa-rotate-right")"></i>
             </button>
@@ -60,6 +63,7 @@
     private List<string> entries = [];
     private bool loading;
     private bool hasApiKey;
+    private bool ascending = false;
     private string error;
 
     private LocalisationStrings L => LocaleService.Strings;
@@ -107,6 +111,12 @@
         await LoadEntries();
     }
 
+    private async Task ToggleOrder()
+    {
+        ascending = !ascending;
+        await LoadEntries();
+    }
+
     private async Task LoadEntries()
     {
         string key = await ApiKeyService.GetApiKeyAsync();
@@ -119,7 +129,7 @@
 
         try
         {
-            entries = await LogService.GetLogsForDateAsync(currentDate);
+            entries = await LogService.GetLogsForDateAsync(currentDate, ascending: ascending);
         }
         catch (Exception ex)
         {

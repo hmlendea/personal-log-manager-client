@@ -14,6 +14,8 @@ namespace PersonalLogManagerClient.Services
         // Buttons / status
         public string Loading { get; init; }
         public string Refresh { get; init; }
+        public string SortAscending { get; init; }
+        public string SortDescending { get; init; }
 
         // Notices
         public string NoApiKeyNotice { get; init; }
@@ -44,6 +46,8 @@ namespace PersonalLogManagerClient.Services
             NextDay = "Next day",
             Loading = "Loading…",
             Refresh = "Refresh",
+            SortAscending = "Sort ascending",
+            SortDescending = "Sort descending",
             NoApiKeyNotice = "Set an API key in the top bar to load entries.",
             NoEntries = date => $"No entries for {date}.",
             LogEntries = count => $"{count} log entries",
@@ -67,6 +71,8 @@ namespace PersonalLogManagerClient.Services
             NextDay = "Ziua următoare",
             Loading = "Se încarcă…",
             Refresh = "Reîncarcă",
+            SortAscending = "Sortare crescătoare",
+            SortDescending = "Sortare descrescătoare",
             NoApiKeyNotice = "Setați o cheie API în bara de sus pentru a încărca intrările.",
             NoEntries = date => $"Nu există intrări pentru {date}.",
             LogEntries = count => $"{count} intrări în jurnal",
