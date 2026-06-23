@@ -479,6 +479,7 @@ html, body {
     text-align: center;
     padding: 0;
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .date-part::-webkit-inner-spin-button,
