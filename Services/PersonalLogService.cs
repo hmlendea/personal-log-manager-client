@@ -70,6 +70,44 @@ namespace PersonalLogManagerClient.Services
             return [];
         }
 
+        public async Task DeleteLogAsync(string id)
+        {
+            if (rateLimitService.IsLocked)
+            {
+                throw new InvalidOperationException(localeService.Strings.LockedOut(rateLimitService.LockedUntil!.Value.ToLocalTime()));
+            }
+
+            string apiKey = await apiKeyService.GetApiKeyAsync();
+
+            DeleteLogRequest request = new()
+            {
+                Id = id
+            };
+
+            NuciApiRequestAuthorisationInfo auth = new()
+            {
+                BearerToken = apiKey,
+                ClientId = $"PersonalLogManagerClient_{Environment.MachineName}"
+            };
+
+            NuciAPI.Responses.NuciApiResponse response = await client.SendRequestAsync<DeleteLogRequest, NuciAPI.Responses.NuciApiSuccessResponse>(
+                HttpMethod.Delete,
+                request,
+                auth,
+                $"/PersonalLog/{id}");
+
+            if (response is NuciAPI.Responses.NuciApiErrorResponse errorResponse &&
+                (errorResponse.Code == "AUTHENTICATION_FAILURE" || errorResponse.Code == "UNAUTHORISED"))
+            {
+                rateLimitService.RecordFailure();
+                string message = rateLimitService.IsLocked
+                    ? localeService.Strings.LockedOut(rateLimitService.LockedUntil!.Value.ToLocalTime())
+                    : localeService.Strings.InvalidApiKey;
+
+                throw new InvalidOperationException(message);
+            }
+        }
+
         private LogEntry CreateLogEntry(string rawText)
         {
             Match match = parsePattern.Match(rawText ?? "");

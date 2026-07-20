@@ -59,7 +59,7 @@
 
 @if (selectedEntry is not null)
 {
-    <EntryDetailPanel Entry="selectedEntry" OnClose="ClosePanel" />
+    <EntryDetailPanel Entry="selectedEntry" OnClose="ClosePanel" OnDeleted="OnEntryDeleted" />
 }
 
 @code {
@@ -162,6 +162,12 @@
     private void ClosePanel()
     {
         selectedEntry = null;
+    }
+
+    private async Task OnEntryDeleted()
+    {
+        selectedEntry = null;
+        await LoadEntries();
     }
 
     private string GetEntryItemCssClass(LogEntry entry)
