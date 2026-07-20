@@ -17,11 +17,11 @@ namespace PersonalLogManagerClient.Services
         private readonly LocaleService localeService = localeService;
         private readonly ApiKeyRateLimitService rateLimitService = rateLimitService;
 
-        // Matches: leading log ID (L + digits + space) and date (yyyy-MM-dd: )
-        private static readonly Regex trimPattern =
-            new(@"^L\d+\s+\d{4}-\d{2}-\d{2}:\s*", RegexOptions.Compiled);
+        // Matches: log ID (L + digits), date (yyyy-MM-dd), and text separately.
+        private static readonly Regex parsePattern =
+            new(@"^(L\d+)\s+(\d{4}-\d{2}-\d{2}):\s*(.*)", RegexOptions.Compiled | RegexOptions.Singleline);
 
-        public async Task<List<string>> GetLogsForDateAsync(string date, int count = 1000, bool ascending = false)
+        public async Task<List<LogEntry>> GetLogsForDateAsync(string date, int count = 1000, bool ascending = false)
         {
             if (rateLimitService.IsLocked)
             {
@@ -63,11 +63,35 @@ namespace PersonalLogManagerClient.Services
 
             if (response is GetLogsResponse logsResponse)
             {
-                IEnumerable<string> logs = (logsResponse.Logs ?? []).Select(entry => trimPattern.Replace(entry, ""));
+                IEnumerable<LogEntry> logs = (logsResponse.Logs ?? []).Select(CreateLogEntry);
                 return ascending ? [.. logs] : [.. logs.Reverse()];
             }
 
             return [];
+        }
+
+        private LogEntry CreateLogEntry(string rawText)
+        {
+            Match match = parsePattern.Match(rawText ?? "");
+
+            if (match.Success)
+            {
+                return new LogEntry
+                {
+                    Id = match.Groups[1].Value,
+                    Date = match.Groups[2].Value,
+                    Text = match.Groups[3].Value,
+                    RawText = rawText
+                };
+            }
+
+            return new LogEntry
+            {
+                Id = "",
+                Date = "",
+                Text = rawText ?? "",
+                RawText = rawText ?? ""
+            };
         }
     }
 }

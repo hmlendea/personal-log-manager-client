@@ -717,6 +717,17 @@ html, body {
     color: var(--text);
     border-left: 3px solid var(--accent);
     line-height: 1.5;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.entry-item:hover {
+    background: var(--input-border);
+}
+
+.entry-item.is-selected {
+    border-left-color: var(--accent-hover);
+    background: var(--input-border);
 }
 
 /* ── Blazor error UI ────────────────────────────────── */

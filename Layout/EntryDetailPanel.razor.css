@@ -9,14 +9,24 @@
     position: fixed;
     top: var(--bar-height);
     right: 0;
-    width: 420px;
+    left: 0;
+    width: 100%;
     height: calc(100vh - var(--bar-height));
     background: var(--bar-bg);
-    border-left: 1px solid var(--bar-border);
+    border-top: 1px solid var(--bar-border);
     display: flex;
     flex-direction: column;
     z-index: 201;
     animation: slide-in-from-right 0.2s ease-out;
+}
+
+@media (min-width: 480px) {
+    .entry-detail-panel {
+        left: auto;
+        width: 420px;
+        border-left: 1px solid var(--bar-border);
+        border-top: none;
+    }
 }
 
 @keyframes slide-in-from-right {

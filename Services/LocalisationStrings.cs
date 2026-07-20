@@ -24,14 +24,14 @@ namespace PersonalLogManagerClient.Services
         public string InvalidApiKey { get; init; }
         public Func<DateTime, string> LockedOut { get; init; }
 
+        // Entry detail panel
+        public string EntryDetails { get; init; }
+        public string Close { get; init; }
+
         // API key widget
         public string ClearKey { get; init; }
         public string ApiKeyPlaceholder { get; init; }
         public string Save { get; init; }
-
-        // Entry detail panel
-        public string EntryDetails { get; init; }
-        public string Close { get; init; }
 
         // Not Found page
         public string NotFoundTitle { get; init; }
@@ -57,11 +57,11 @@ namespace PersonalLogManagerClient.Services
             LogEntries = count => $"{count} log entries",
             InvalidApiKey = "Invalid API key.",
             LockedOut = until => $"Too many failed attempts. Requests blocked until {until:HH:mm}.",
+            EntryDetails = "Entry Details",
+            Close = "Close",
             ClearKey = "Clear Key",
             ApiKeyPlaceholder = "API Key",
             Save = "Save",
-            EntryDetails = "Entry Details",
-            Close = "Close",
             NotFoundTitle = "Not Found",
             NotFoundMessage = "Sorry, the content you are looking for does not exist.",
             FooterApiSource = "API Source",
@@ -84,11 +84,11 @@ namespace PersonalLogManagerClient.Services
             LogEntries = count => $"{count} intrări în jurnal",
             InvalidApiKey = "Cheie API invalidă.",
             LockedOut = until => $"Prea multe încercări eșuate. Cererile sunt blocate până la {until:HH:mm}.",
+            EntryDetails = "Detalii intrare",
+            Close = "Închide",
             ClearKey = "Șterge cheia",
             ApiKeyPlaceholder = "Cheia API",
             Save = "Salvează",
-            EntryDetails = "Detalii intrare",
-            Close = "Închide",
             NotFoundTitle = "Pagina nu a fost găsită",
             NotFoundMessage = "Ne pare rău, conținutul căutat nu există.",
             FooterApiSource = "Sursă API",
