@@ -1,0 +1,76 @@
+.entry-detail-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 200;
+}
+
+.entry-detail-panel {
+    position: fixed;
+    top: var(--bar-height);
+    right: 0;
+    width: 420px;
+    height: calc(100vh - var(--bar-height));
+    background: var(--bar-bg);
+    border-left: 1px solid var(--bar-border);
+    display: flex;
+    flex-direction: column;
+    z-index: 201;
+    animation: slide-in-from-right 0.2s ease-out;
+}
+
+@keyframes slide-in-from-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+.entry-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--bar-height);
+    padding: 0 16px;
+    border-bottom: 1px solid var(--bar-border);
+    flex-shrink: 0;
+}
+
+.entry-detail-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.01em;
+}
+
+.btn-close-panel {
+    background: transparent;
+    color: var(--text-muted);
+    padding: 0 8px;
+    height: 28px;
+    font-size: 14px;
+}
+
+.btn-close-panel:hover {
+    color: var(--text);
+    background: var(--input-bg);
+    border-radius: 4px;
+}
+
+.entry-detail-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.entry-detail-json {
+    font-family: "Cascadia Code", "Fira Code", "Consolas", "Courier New", monospace;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    line-height: 1.6;
+}

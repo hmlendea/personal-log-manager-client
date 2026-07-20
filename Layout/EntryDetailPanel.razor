@@ -1,0 +1,35 @@
+@using System.Text.Json
+@inject LocaleService LocaleService
+
+<div class="entry-detail-backdrop" @onclick="OnClose"></div>
+
+<div class="entry-detail-panel" @onclick:stopPropagation="true">
+    <div class="entry-detail-header">
+        <span class="entry-detail-title">@L.EntryDetails</span>
+        <button class="btn btn-close-panel" title="@L.Close" @onclick="OnClose">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <div class="entry-detail-body">
+        <pre class="entry-detail-json">@FormatJson()</pre>
+    </div>
+</div>
+
+@code {
+    [Parameter] public LogEntry Entry { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private LocalisationStrings L => LocaleService.Strings;
+
+    private string FormatJson()
+    {
+        Dictionary<string, string> data = new()
+        {
+            ["id"] = Entry.Id,
+            ["date"] = Entry.Date,
+            ["text"] = Entry.Text
+        };
+
+        return JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+    }
+}

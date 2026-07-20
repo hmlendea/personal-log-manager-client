@@ -29,6 +29,10 @@ namespace PersonalLogManagerClient.Services
         public string ApiKeyPlaceholder { get; init; }
         public string Save { get; init; }
 
+        // Entry detail panel
+        public string EntryDetails { get; init; }
+        public string Close { get; init; }
+
         // Not Found page
         public string NotFoundTitle { get; init; }
         public string NotFoundMessage { get; init; }
@@ -56,6 +60,8 @@ namespace PersonalLogManagerClient.Services
             ClearKey = "Clear Key",
             ApiKeyPlaceholder = "API Key",
             Save = "Save",
+            EntryDetails = "Entry Details",
+            Close = "Close",
             NotFoundTitle = "Not Found",
             NotFoundMessage = "Sorry, the content you are looking for does not exist.",
             FooterApiSource = "API Source",
@@ -81,6 +87,8 @@ namespace PersonalLogManagerClient.Services
             ClearKey = "Șterge cheia",
             ApiKeyPlaceholder = "Cheia API",
             Save = "Salvează",
+            EntryDetails = "Detalii intrare",
+            Close = "Închide",
             NotFoundTitle = "Pagina nu a fost găsită",
             NotFoundMessage = "Ne pare rău, conținutul căutat nu există.",
             FooterApiSource = "Sursă API",
