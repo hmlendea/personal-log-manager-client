@@ -17,11 +17,11 @@ namespace PersonalLogManagerClient.Services
         private readonly LocaleService localeService = localeService;
         private readonly ApiKeyRateLimitService rateLimitService = rateLimitService;
 
-        // Matches: leading log ID (L + digits + space) and date (yyyy-MM-dd: )
-        private static readonly Regex trimPattern =
-            new(@"^L\d+\s+\d{4}-\d{2}-\d{2}:\s*", RegexOptions.Compiled);
+        // Matches: log ID (L + digits), date (yyyy-MM-dd), and text separately.
+        private static readonly Regex parsePattern =
+            new(@"^(L\d+)\s+(\d{4}-\d{2}-\d{2}):\s*(.*)", RegexOptions.Compiled | RegexOptions.Singleline);
 
-        public async Task<List<string>> GetLogsForDateAsync(string date, int count = 1000, bool ascending = false)
+        public async Task<List<LogEntry>> GetLogsForDateAsync(string date, int count = 1000, bool ascending = false)
         {
             if (rateLimitService.IsLocked)
             {
@@ -63,11 +63,73 @@ namespace PersonalLogManagerClient.Services
 
             if (response is GetLogsResponse logsResponse)
             {
-                IEnumerable<string> logs = (logsResponse.Logs ?? []).Select(entry => trimPattern.Replace(entry, ""));
+                IEnumerable<LogEntry> logs = (logsResponse.Logs ?? []).Select(CreateLogEntry);
                 return ascending ? [.. logs] : [.. logs.Reverse()];
             }
 
             return [];
+        }
+
+        public async Task DeleteLogAsync(string id)
+        {
+            if (rateLimitService.IsLocked)
+            {
+                throw new InvalidOperationException(localeService.Strings.LockedOut(rateLimitService.LockedUntil!.Value.ToLocalTime()));
+            }
+
+            string apiKey = await apiKeyService.GetApiKeyAsync();
+
+            DeleteLogRequest request = new()
+            {
+                Id = id
+            };
+
+            NuciApiRequestAuthorisationInfo auth = new()
+            {
+                BearerToken = apiKey,
+                ClientId = $"PersonalLogManagerClient_{Environment.MachineName}"
+            };
+
+            NuciAPI.Responses.NuciApiResponse response = await client.SendRequestAsync<DeleteLogRequest, NuciAPI.Responses.NuciApiSuccessResponse>(
+                HttpMethod.Delete,
+                request,
+                auth,
+                $"/PersonalLog/{id}");
+
+            if (response is NuciAPI.Responses.NuciApiErrorResponse errorResponse &&
+                (errorResponse.Code == "AUTHENTICATION_FAILURE" || errorResponse.Code == "UNAUTHORISED"))
+            {
+                rateLimitService.RecordFailure();
+                string message = rateLimitService.IsLocked
+                    ? localeService.Strings.LockedOut(rateLimitService.LockedUntil!.Value.ToLocalTime())
+                    : localeService.Strings.InvalidApiKey;
+
+                throw new InvalidOperationException(message);
+            }
+        }
+
+        private LogEntry CreateLogEntry(string rawText)
+        {
+            Match match = parsePattern.Match(rawText ?? "");
+
+            if (match.Success)
+            {
+                return new LogEntry
+                {
+                    Id = match.Groups[1].Value,
+                    Date = match.Groups[2].Value,
+                    Text = match.Groups[3].Value,
+                    RawText = rawText
+                };
+            }
+
+            return new LogEntry
+            {
+                Id = "",
+                Date = "",
+                Text = rawText ?? "",
+                RawText = rawText ?? ""
+            };
         }
     }
 }

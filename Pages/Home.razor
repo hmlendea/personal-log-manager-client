@@ -48,25 +48,31 @@
     else
     {
         <ul class="entries-list">
-            @foreach (string entry in entries)
+            @foreach (LogEntry entry in entries)
             {
-                <li class="entry-item">@entry</li>
+                <li class="@GetEntryItemCssClass(entry)" @onclick="() => SelectEntry(entry)">@entry.Text</li>
             }
         </ul>
         <p class="entries-count">@L.LogEntries(entries.Count)</p>
     }
 </div>
 
+@if (selectedEntry is not null)
+{
+    <EntryDetailPanel Entry="selectedEntry" OnClose="ClosePanel" OnDeleted="OnEntryDeleted" />
+}
+
 @code {
     private string today = DateTime.Today.ToString("yyyy-MM-dd");
     private string yesterday = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
     private string currentDate = DateTime.Today.ToString("yyyy-MM-dd");
-    private List<string> entries = [];
+    private List<LogEntry> entries = [];
     private bool loading;
     private bool hasApiKey;
     private bool ascending = false;
     private bool fullWidth = false;
     private string error;
+    private LogEntry selectedEntry;
 
     private LocalisationStrings L => LocaleService.Strings;
 
@@ -148,6 +154,34 @@
         await JS.InvokeVoidAsync("localStorage.setItem", "fullWidth", fullWidth.ToString().ToLower());
     }
 
+    private void SelectEntry(LogEntry entry)
+    {
+        selectedEntry = entry;
+    }
+
+    private void ClosePanel()
+    {
+        selectedEntry = null;
+    }
+
+    private async Task OnEntryDeleted()
+    {
+        selectedEntry = null;
+        await LoadEntries();
+    }
+
+    private string GetEntryItemCssClass(LogEntry entry)
+    {
+        string cssClass = "entry-item";
+
+        if (selectedEntry == entry)
+        {
+            cssClass += " is-selected";
+        }
+
+        return cssClass;
+    }
+
     private async Task LoadEntries()
     {
         string key = await ApiKeyService.GetApiKeyAsync();
@@ -160,6 +194,7 @@
 
         loading = true;
         error = null;
+        selectedEntry = null;
         StateHasChanged();
 
         try

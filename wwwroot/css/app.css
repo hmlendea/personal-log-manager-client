@@ -104,10 +104,7 @@ html, body {
 .api-key-input {
     height: 32px;
     padding: 0 10px;
-    width: auto;
-    flex: 1;
-    min-width: 0;
-    max-width: 320px;
+    width: 200px;
     background: var(--input-bg);
     border: 1px solid var(--input-border);
     border-radius: 6px;
@@ -298,6 +295,13 @@ html, body {
         padding-left: 56px;
         /* 16px bar-padding + 120px locale-select + 8px flex-gap */
         padding-right: 144px;
+    }
+
+    /* When the API key input is visible, extend left padding to clear it. */
+    body:has(.api-key-input) .nav-bar {
+        /* 16px bar-padding + 32px save-btn + 8px flex-gap + 200px input + 8px flex-gap */
+        padding-left: 264px;
+    }
     }
 
     .nav-bar > * {
@@ -713,6 +717,17 @@ html, body {
     color: var(--text);
     border-left: 3px solid var(--accent);
     line-height: 1.5;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.entry-item:hover {
+    background: var(--input-border);
+}
+
+.entry-item.is-selected {
+    border-left-color: var(--accent-hover);
+    background: var(--input-border);
 }
 
 /* ── Blazor error UI ────────────────────────────────── */

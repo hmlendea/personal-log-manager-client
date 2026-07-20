@@ -1,0 +1,100 @@
+@using System.Text.Encodings.Web
+@using System.Text.Json
+@inject LocaleService LocaleService
+@inject PersonalLogService LogService
+
+<div class="entry-detail-backdrop" @onclick="OnClose"></div>
+
+<div class="entry-detail-panel" @onclick:stopPropagation="true">
+    <div class="entry-detail-header">
+        <span class="entry-detail-title">@L.EntryDetails</span>
+        <div class="entry-detail-header-actions">
+            @if (isConfirmingDelete)
+            {
+                <button class="btn btn-confirm-delete" @onclick="ExecuteDeleteAsync">
+                    <i class="fa-solid fa-circle-check"></i>
+                    @L.ConfirmDelete
+                </button>
+                <button class="btn btn-cancel-delete" @onclick="CancelDelete">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            }
+            else
+            {
+                <button class="btn btn-delete-entry" title="@L.Delete" @onclick="RequestDelete" disabled="@isDeleting">
+                    <i class="fa-solid @(isDeleting ? "fa-spinner fa-spin" : "fa-trash")"></i>
+                </button>
+            }
+            <button class="btn btn-close-panel" title="@L.Close" @onclick="OnClose">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+    @if (deleteError is not null)
+    {
+        <div class="entry-detail-error">@deleteError</div>
+    }
+    <div class="entry-detail-body">
+        <pre class="entry-detail-json">@FormatJson()</pre>
+    </div>
+</div>
+
+@code {
+    [Parameter] public LogEntry Entry { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnDeleted { get; set; }
+
+    private bool isConfirmingDelete;
+    private bool isDeleting;
+    private string deleteError;
+
+    private LocalisationStrings L => LocaleService.Strings;
+
+    private void RequestDelete()
+    {
+        deleteError = null;
+        isConfirmingDelete = true;
+    }
+
+    private void CancelDelete()
+    {
+        isConfirmingDelete = false;
+    }
+
+    private async Task ExecuteDeleteAsync()
+    {
+        isConfirmingDelete = false;
+        isDeleting = true;
+        deleteError = null;
+
+        try
+        {
+            await LogService.DeleteLogAsync(Entry.Id);
+            await OnDeleted.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            deleteError = ex.Message;
+        }
+        finally
+        {
+            isDeleting = false;
+        }
+    }
+
+    private string FormatJson()
+    {
+        Dictionary<string, string> data = new()
+        {
+            ["id"] = Entry.Id,
+            ["date"] = Entry.Date,
+            ["text"] = Entry.Text
+        };
+
+        return JsonSerializer.Serialize(data, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+    }
+}

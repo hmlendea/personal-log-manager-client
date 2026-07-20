@@ -24,6 +24,12 @@ namespace PersonalLogManagerClient.Services
         public string InvalidApiKey { get; init; }
         public Func<DateTime, string> LockedOut { get; init; }
 
+        // Entry detail panel
+        public string EntryDetails { get; init; }
+        public string Close { get; init; }
+        public string Delete { get; init; }
+        public string ConfirmDelete { get; init; }
+
         // API key widget
         public string ClearKey { get; init; }
         public string ApiKeyPlaceholder { get; init; }
@@ -53,6 +59,10 @@ namespace PersonalLogManagerClient.Services
             LogEntries = count => $"{count} log entries",
             InvalidApiKey = "Invalid API key.",
             LockedOut = until => $"Too many failed attempts. Requests blocked until {until:HH:mm}.",
+            EntryDetails = "Entry Details",
+            Close = "Close",
+            Delete = "Delete",
+            ConfirmDelete = "Confirm Delete",
             ClearKey = "Clear Key",
             ApiKeyPlaceholder = "API Key",
             Save = "Save",
@@ -78,6 +88,10 @@ namespace PersonalLogManagerClient.Services
             LogEntries = count => $"{count} intrări în jurnal",
             InvalidApiKey = "Cheie API invalidă.",
             LockedOut = until => $"Prea multe încercări eșuate. Cererile sunt blocate până la {until:HH:mm}.",
+            EntryDetails = "Detalii intrare",
+            Close = "Închide",
+            Delete = "Elimină",
+            ConfirmDelete = "Confirmă eliminarea",
             ClearKey = "Șterge cheia",
             ApiKeyPlaceholder = "Cheia API",
             Save = "Salvează",
