@@ -71,6 +71,50 @@ namespace PersonalLogManagerClient.Services
             return [];
         }
 
+        public async Task<GetLogByIdResponse> GetLogByIdAsync(string id)
+        {
+            if (rateLimitService.IsLocked)
+            {
+                throw new InvalidOperationException(localeService.Strings.LockedOut(rateLimitService.LockedUntil!.Value.ToLocalTime()));
+            }
+
+            string apiKey = await apiKeyService.GetApiKeyAsync();
+
+            NuciApiRequestAuthorisationInfo auth = new()
+            {
+                BearerToken = apiKey,
+                ClientId = $"PersonalLogManagerClient_{Environment.MachineName}"
+            };
+
+            NuciAPI.Responses.NuciApiResponse response = await client.SendRequestAsync<GetLogByIdRequest, GetLogByIdResponse>(
+                HttpMethod.Get,
+                new GetLogByIdRequest(),
+                auth,
+                $"/PersonalLog/{id}");
+
+            if (response is NuciAPI.Responses.NuciApiErrorResponse errorResponse &&
+                (errorResponse.Code == "AUTHENTICATION_FAILURE" || errorResponse.Code == "UNAUTHORISED"))
+            {
+                rateLimitService.RecordFailure();
+
+                string message = localeService.Strings.InvalidApiKey;
+
+                if (rateLimitService.IsLocked)
+                {
+                    message = localeService.Strings.LockedOut(rateLimitService.LockedUntil!.Value.ToLocalTime());
+                }
+
+                throw new InvalidOperationException(message);
+            }
+
+            if (response is GetLogByIdResponse detailsResponse)
+            {
+                return detailsResponse;
+            }
+
+            return null;
+        }
+
         public async Task DeleteLogAsync(string id)
         {
             if (rateLimitService.IsLocked)
