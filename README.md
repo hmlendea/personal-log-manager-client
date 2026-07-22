@@ -1,73 +1,74 @@
-[![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/fund.html)
+[![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/funding)
 [![Latest Release](https://img.shields.io/github/v/release/hmlendea/personal-log-manager-client)](https://github.com/hmlendea/personal-log-manager-client/releases/latest)
 [![Build Status](https://github.com/hmlendea/personal-log-manager-client/actions/workflows/dotnet.yml/badge.svg)](https://github.com/hmlendea/personal-log-manager-client/actions/workflows/dotnet.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://gnu.org/licenses/gpl-3.0)
 
 # Personal Log Manager Client
 
-A Blazor Server web application for the [Personal Log Manager](https://github.com/hmlendea/personal-log-manager) API.
+A Blazor Server web application for browsing and managing personal log entries through the [Personal Log Manager](https://github.com/hmlendea/personal-log-manager) API.
 
-## Table of Contents
+## 📑 Table of Contents
 
-- [Overview](#overview)
-- [Requirements](#requirements)
-- [Configuration](#configuration)
-- [Running](#running)
-- [Development](#development)
+- [Features](#-features)
+- [Usage](#-usage)
+- [Configuration](#️-configuration)
+- [Development](#️-development)
+  - [Requirements](#requirements)
+  - [Build](#build)
+  - [Run](#run)
+  - [Release](#release)
+  - [Dependencies](#dependencies)
+- [Contributing](#-contributing)
+- [Related Projects](#-related-projects)
+- [Support](#-support)
+- [License](#-license)
 
-## Overview
+## ✨ Features
 
-Personal Log Manager Client is a self-hosted web application that connects to a running Personal Log Manager API instance and lets you browse your personal log entries by date.
-
-Features:
 - Browse log entries for any past date or today
 - Navigate between days using previous/next buttons or a date picker
+- View full entry details in a side panel, retrieved via the GET by ID endpoint
+- Create, edit, and delete log entries directly from the UI
 - Configurable sort order: ascending or descending chronological order
-- Entries count shown below the list
+- Entry count displayed below the list
 - API key authentication stored in browser local storage
 - Localisation support: English and Romanian
 - Rate limiting: API key input is blocked for 30 minutes after 5 failed attempts within 10 minutes
-- Installable as a Progressive Web App (PWA) — works on desktop and mobile, including iPhone via Safari
+- Installable as a Progressive Web App (PWA), compatible with desktop and mobile, including iPhone via Safari
 - Offline-capable via service worker caching
 
-## Requirements
+## 🚀 Usage
+
+Launch the application and navigate to `http://localhost:5294`. Enter your API key in the top bar on first launch - it will be saved in browser local storage.
+
+Utilise the date navigation controls to browse log entries. Click any entry to open the detail panel. From the panel you can:
+
+- View the full structured entry data returned by the API
+- Edit the entry using the ✏️ button, which opens an editable JSON form pre-populated with the current values
+- Delete the entry using the 🗑️ button, which requires confirmation before dispatching the request
+
+## ⚙️ Configuration
+
+All settings are loaded from `appsettings.json`. The subsequent keys are recognised:
+
+| Section | Key | Description |
+|---------|-----|-------------|
+| `server` | `pathBase` | Optional path base for reverse-proxy deployments (e.g. `/logs`) |
+| `personalLogManager` | `baseUrl` | Base URL of the Personal Log Manager API instance |
+
+## 🛠️ Development
+
+### Requirements
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - A running [Personal Log Manager](https://github.com/hmlendea/personal-log-manager) API instance
 
-## Configuration
-
-The configuration is in `appsettings.json`:
-
-```json
-{
-  "personalLogManager": {
-    "baseUrl": "http://localhost:5000"
-  }
-}
-```
-
-| Setting | Description |
-|---|---|
-| `PersonalLogManager.BaseUrl` | Base URL of the Personal Log Manager API instance |
-
-## Running
-
-```bash
-dotnet restore
-dotnet run
-```
-
-The app will be available at `http://localhost:5294` by default.
-
-On first launch, enter your API key in the top bar. It will be saved in the browser's local storage.
-
-## Development
+All NuGet dependencies are restored automatically by `dotnet restore`.
 
 ### Build
 
 ```bash
-dotnet build
+dotnet build PersonalLogManagerClient.csproj
 ```
 
 ### Run
@@ -84,26 +85,39 @@ The repository includes `release.sh`, which delegates to the upstream deployment
 bash ./release.sh 1.0.0
 ```
 
-This script downloads and executes an external release helper from: `https://raw.githubusercontent.com/hmlendea/deployment-scripts/master/release/dotnet/10.0.sh`
+This script downloads and executes an external release helper from `https://raw.githubusercontent.com/hmlendea/deployment-scripts/master/release/dotnet/10.0.sh`.
 
 **Note:** Piping into `bash` is an intensely controversial topic. Please review any external scripts before running them in your environment!
 
-## Contributing
+### Dependencies
 
-Contributions are welcome.
+| Package | Purpose |
+|---------|---------|
+| `NuciAPI.Client` | HTTP client and request/response infrastructure for communicating with the Personal Log Manager API |
 
-Please:
+## 🤝 Contributing
 
-- keep the pull requests focused and consistent with the existing style
-- update the documentation when the behaviour changes
+You are welcome to bring any suggestion, feedback or modification to this project.
 
-## Related Projects
+When doing so, please:
+- Maintain cross-platform compatibility
+- Maintain the pull requests as focused and consistent with the existing code style
+- Revise the documentation when behaviour changes
 
-- [Personal Data Logger](https://github.com/hmlendea/personal-data-logger)
-- [Personal Log Manager](https://github.com/hmlendea/personal-log-manager)
-- [Personal Log Manager Client](https://github.com/hmlendea/personal-log-manager-client)
+## 🔗 Related Projects
 
-## License
+- [Personal Data Logger](https://github.com/hmlendea/personal-data-logger): The data collection tool that feeds into the Personal Log Manager
+- [Personal Log Manager](https://github.com/hmlendea/personal-log-manager): The server-side API that this client communicates with
 
-Licensed under the GNU General Public License v3.0 or later.
+## 💝 Support
+
+Discovered a bug or have a suggestion? [Open an issue](https://github.com/hmlendea/personal-log-manager-client/issues)!
+
+If you find this project useful, consider [funding it](https://hmlendea.go.ro/funding) or starring ⭐️ it on GitHub!
+
+[![Donate](https://raw.githubusercontent.com/hmlendea/readme-assets/master/donate_generic.png)](https://hmlendea.go.ro/funding)
+
+## 📄 License
+
+Licensed under the `GNU General Public License v3.0` or later.
 See [LICENSE](./LICENSE) for details.
