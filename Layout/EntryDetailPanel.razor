@@ -1,3 +1,4 @@
+@using System.Linq
 @using System.Text.Encodings.Web
 @using System.Text.Json
 @inject LocaleService LocaleService
@@ -7,9 +8,19 @@
 
 <div class="entry-detail-panel" @onclick:stopPropagation="true">
     <div class="entry-detail-header">
-        <span class="entry-detail-title">@L.EntryDetails</span>
+        <span class="entry-detail-title">@(isEditing ? L.EditEntry : L.EntryDetails)</span>
         <div class="entry-detail-header-actions">
-            @if (isConfirmingDelete)
+            @if (isEditing)
+            {
+                <button class="btn btn-save-edit" @onclick="ExecuteEditAsync" disabled="@isSaving">
+                    <i class="fa-solid @GetSaveIconClass()"></i>
+                    @L.Save
+                </button>
+                <button class="btn btn-cancel-edit" title="@L.Close" @onclick="CancelEdit" disabled="@isSaving">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            }
+            else if (isConfirmingDelete)
             {
                 <button class="btn btn-confirm-delete" @onclick="ExecuteDeleteAsync">
                     <i class="fa-solid fa-circle-check"></i>
@@ -21,8 +32,11 @@
             }
             else
             {
+                <button class="btn btn-edit-entry" title="@L.Edit" @onclick="StartEdit" disabled="@isLoadingDetails">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
                 <button class="btn btn-delete-entry" title="@L.Delete" @onclick="RequestDelete" disabled="@isDeleting">
-                    <i class="fa-solid @(isDeleting ? "fa-spinner fa-spin" : "fa-trash")"></i>
+                    <i class="fa-solid @GetDeleteIconClass()"></i>
                 </button>
             }
             <button class="btn btn-close-panel" title="@L.Close" @onclick="OnClose">
@@ -30,12 +44,31 @@
             </button>
         </div>
     </div>
+    @if (loadDetailsError is not null)
+    {
+        <div class="entry-detail-error">@loadDetailsError</div>
+    }
     @if (deleteError is not null)
     {
         <div class="entry-detail-error">@deleteError</div>
     }
+    @if (editError is not null)
+    {
+        <div class="entry-detail-error">@editError</div>
+    }
     <div class="entry-detail-body">
-        <pre class="entry-detail-json">@FormatJson()</pre>
+        @if (isEditing)
+        {
+            <textarea class="entry-edit-json" @bind="editJson"></textarea>
+        }
+        else if (isLoadingDetails)
+        {
+            <p class="entry-detail-notice">@L.Loading</p>
+        }
+        else
+        {
+            <pre class="entry-detail-json">@FormatJson()</pre>
+        }
     </div>
 </div>
 
@@ -43,12 +76,120 @@
     [Parameter] public LogEntry Entry { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback OnDeleted { get; set; }
+    [Parameter] public EventCallback OnEdited { get; set; }
 
     private bool isConfirmingDelete;
     private bool isDeleting;
+    private bool isEditing;
+    private bool isSaving;
     private string deleteError;
+    private string editError;
+    private string editJson;
+    private GetLogByIdResponse entryDetails;
+    private bool isLoadingDetails;
+    private string loadDetailsError;
 
     private LocalisationStrings L => LocaleService.Strings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEntryDetailsAsync();
+    }
+
+    private async Task LoadEntryDetailsAsync()
+    {
+        isLoadingDetails = true;
+        loadDetailsError = null;
+
+        try
+        {
+            entryDetails = await LogService.GetLogByIdAsync(Entry.Id);
+        }
+        catch (Exception ex)
+        {
+            loadDetailsError = ex.Message;
+        }
+        finally
+        {
+            isLoadingDetails = false;
+        }
+    }
+
+    private void StartEdit()
+    {
+        editError = null;
+        editJson = FormatEditJson();
+        isEditing = true;
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+        editError = null;
+    }
+
+    private async Task ExecuteEditAsync()
+    {
+        isSaving = true;
+        editError = null;
+
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(editJson);
+            JsonElement root = document.RootElement;
+
+            string date = "";
+
+            if (root.TryGetProperty("date", out JsonElement dateElement) &&
+                dateElement.ValueKind == JsonValueKind.String)
+            {
+                date = dateElement.GetString() ?? "";
+            }
+
+            string time = "";
+
+            if (root.TryGetProperty("time", out JsonElement timeElement) &&
+                timeElement.ValueKind == JsonValueKind.String)
+            {
+                time = timeElement.GetString() ?? "";
+            }
+
+            string timeZone = "";
+
+            if (root.TryGetProperty("timeZone", out JsonElement timeZoneElement) &&
+                timeZoneElement.ValueKind == JsonValueKind.String)
+            {
+                timeZone = timeZoneElement.GetString() ?? "";
+            }
+
+            if (!root.TryGetProperty("data", out JsonElement dataElement))
+            {
+                editError = "JSON must contain a \"data\" object.";
+                return;
+            }
+
+            Dictionary<string, JsonElement> data = dataElement
+                .EnumerateObject()
+                .ToDictionary(
+                    property => property.Name,
+                    property => property.Value.Clone());
+
+            await LogService.UpdateLogAsync(Entry.Id, date, time, timeZone, data);
+            await OnEdited.InvokeAsync();
+        }
+        catch (JsonException)
+        {
+            editError = "Invalid JSON format.";
+        }
+        catch (Exception ex)
+        {
+            editError = ex.Message;
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
 
     private void RequestDelete()
     {
@@ -84,17 +225,86 @@
 
     private string FormatJson()
     {
-        Dictionary<string, string> data = new()
+        JsonSerializerOptions options = new()
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+
+        if (entryDetails is not null)
+        {
+            Dictionary<string, object> fullData = new()
+            {
+                ["id"] = entryDetails.Id ?? "",
+                ["date"] = entryDetails.Date ?? "",
+                ["time"] = entryDetails.Time ?? "",
+                ["timeZone"] = entryDetails.TimeZone ?? "",
+                ["template"] = entryDetails.Template ?? "",
+                ["data"] = entryDetails.Data ?? new Dictionary<string, string>(),
+                ["createdDateTime"] = entryDetails.CreatedDateTime ?? "",
+                ["updatedDateTime"] = entryDetails.UpdatedDateTime ?? ""
+            };
+
+            return JsonSerializer.Serialize(fullData, options);
+        }
+
+        Dictionary<string, string> fallbackData = new()
         {
             ["id"] = Entry.Id,
             ["date"] = Entry.Date,
             ["text"] = Entry.Text
         };
 
-        return JsonSerializer.Serialize(data, new JsonSerializerOptions
+        return JsonSerializer.Serialize(fallbackData, options);
+    }
+
+    private string FormatEditJson()
+    {
+        string date = Entry.Date;
+        string time = "";
+        string timeZone = "";
+        Dictionary<string, string> data = new() { ["text"] = Entry.Text };
+
+        if (entryDetails is not null)
+        {
+            date = entryDetails.Date ?? Entry.Date;
+            time = entryDetails.Time ?? "";
+            timeZone = entryDetails.TimeZone ?? "";
+            data = entryDetails.Data ?? data;
+        }
+
+        Dictionary<string, object> wrapper = new()
+        {
+            ["date"] = date,
+            ["time"] = time,
+            ["timeZone"] = timeZone,
+            ["data"] = data
+        };
+
+        return JsonSerializer.Serialize(wrapper, new JsonSerializerOptions
         {
             WriteIndented = true,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         });
+    }
+
+    private string GetSaveIconClass()
+    {
+        if (isSaving)
+        {
+            return "fa-spinner fa-spin";
+        }
+
+        return "fa-check";
+    }
+
+    private string GetDeleteIconClass()
+    {
+        if (isDeleting)
+        {
+            return "fa-spinner fa-spin";
+        }
+
+        return "fa-trash";
     }
 }
