@@ -26,6 +26,7 @@ namespace PersonalLogManagerClient.Services
 
         // Entry detail panel
         public string EntryDetails { get; init; }
+        public string EditEntry { get; init; }
         public string Close { get; init; }
         public string Edit { get; init; }
         public string Delete { get; init; }
@@ -61,6 +62,7 @@ namespace PersonalLogManagerClient.Services
             InvalidApiKey = "Invalid API key.",
             LockedOut = until => $"Too many failed attempts. Requests blocked until {until:HH:mm}.",
             EntryDetails = "Entry Details",
+            EditEntry = "Edit Entry",
             Close = "Close",
             Edit = "Edit",
             Delete = "Delete",
@@ -91,6 +93,7 @@ namespace PersonalLogManagerClient.Services
             InvalidApiKey = "Cheie API invalidă.",
             LockedOut = until => $"Prea multe încercări eșuate. Cererile sunt blocate până la {until:HH:mm}.",
             EntryDetails = "Detalii intrare",
+            EditEntry = "Editare intrare",
             Close = "Închide",
             Edit = "Modifică",
             Delete = "Elimină",

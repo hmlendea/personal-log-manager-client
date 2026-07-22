@@ -8,7 +8,7 @@
 
 <div class="entry-detail-panel" @onclick:stopPropagation="true">
     <div class="entry-detail-header">
-        <span class="entry-detail-title">@L.EntryDetails</span>
+        <span class="entry-detail-title">@(isEditing ? L.EditEntry : L.EntryDetails)</span>
         <div class="entry-detail-header-actions">
             @if (isEditing)
             {
