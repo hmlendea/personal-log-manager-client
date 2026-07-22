@@ -59,7 +59,7 @@
 
 @if (selectedEntry is not null)
 {
-    <EntryDetailPanel Entry="selectedEntry" OnClose="ClosePanel" OnDeleted="OnEntryDeleted" />
+    <EntryDetailPanel Entry="selectedEntry" OnClose="ClosePanel" OnDeleted="OnEntryDeleted" OnEdited="OnEntryEdited" />
 }
 
 @code {
@@ -165,6 +165,12 @@
     }
 
     private async Task OnEntryDeleted()
+    {
+        selectedEntry = null;
+        await LoadEntries();
+    }
+
+    private async Task OnEntryEdited()
     {
         selectedEntry = null;
         await LoadEntries();

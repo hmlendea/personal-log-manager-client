@@ -27,6 +27,7 @@ namespace PersonalLogManagerClient.Services
         // Entry detail panel
         public string EntryDetails { get; init; }
         public string Close { get; init; }
+        public string Edit { get; init; }
         public string Delete { get; init; }
         public string ConfirmDelete { get; init; }
 
@@ -61,6 +62,7 @@ namespace PersonalLogManagerClient.Services
             LockedOut = until => $"Too many failed attempts. Requests blocked until {until:HH:mm}.",
             EntryDetails = "Entry Details",
             Close = "Close",
+            Edit = "Edit",
             Delete = "Delete",
             ConfirmDelete = "Confirm Delete",
             ClearKey = "Clear Key",
@@ -90,6 +92,7 @@ namespace PersonalLogManagerClient.Services
             LockedOut = until => $"Prea multe încercări eșuate. Cererile sunt blocate până la {until:HH:mm}.",
             EntryDetails = "Detalii intrare",
             Close = "Închide",
+            Edit = "Modifică",
             Delete = "Elimină",
             ConfirmDelete = "Confirmă eliminarea",
             ClearKey = "Șterge cheia",
