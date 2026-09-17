@@ -70,13 +70,13 @@ All NuGet dependencies are restored automatically by `dotnet restore`.
 ### Build
 
 ```bash
-dotnet build PersonalLogManagerClient.csproj
+dotnet build PersonalLogManagerClient.slnx
 ```
 
 ### Run
 
 ```bash
-dotnet run
+dotnet run --project PersonalLogManager.Client/PersonalLogManagerClient.csproj
 ```
 
 ### Release
