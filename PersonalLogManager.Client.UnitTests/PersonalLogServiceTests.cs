@@ -157,6 +157,7 @@ namespace PersonalLogManagerClient.UnitTests
 
         [TestCase("")]
         [TestCase("  ")]
+        [TestCase(null)]
         public async Task GivenAnEmptySearchTerm_WhenSearchingLogs_ThenNoEntriesAreReturned(string searchTerm)
         {
             client.Setup(api => api.SendRequestAsync<GetLogsRequest, GetLogsResponse>(
@@ -170,6 +171,28 @@ namespace PersonalLogManagerClient.UnitTests
 
             Assert.That(result, Is.Empty);
             Assert.That(client.Invocations, Is.Empty);
+        }
+
+        [Test]
+        public async Task GivenMatchingEntries_WhenSearchingLogsWithTheDefaultOrder_ThenMatchesAreReturnedInDescendingOrder()
+        {
+            client.Setup(api => api.SendRequestAsync<GetLogsRequest, GetLogsResponse>(
+                    It.IsAny<HttpMethod>(),
+                    It.IsAny<GetLogsRequest>(),
+                    It.IsAny<NuciApiRequestAuthorisationInfo>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(new GetLogsResponse
+                {
+                    Logs =
+                    [
+                        "L4 2026-09-16: 08:00 Bencheamobil service",
+                        "L8 2026-09-17: 09:00 Visited Bencheamobil"
+                    ]
+                });
+
+            List<LogEntry> result = await service.SearchLogsAsync("Bencheamobil");
+
+            Assert.That(result.Select(entry => entry.Id), Is.EqualTo(new[] { "L8", "L4" }));
         }
 
         [TestCase("L4")]
