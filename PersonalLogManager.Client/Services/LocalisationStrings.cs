@@ -10,6 +10,9 @@ namespace PersonalLogManagerClient.Services
         public string TitleEntries { get; init; }
         public string PreviousDay { get; init; }
         public string NextDay { get; init; }
+        public string Calendar { get; init; }
+        public string Search { get; init; }
+        public string SearchPlaceholder { get; init; }
 
         // Buttons / status
         public string Loading { get; init; }
@@ -20,6 +23,8 @@ namespace PersonalLogManagerClient.Services
         // Notices
         public string NoApiKeyNotice { get; init; }
         public Func<string, string> NoEntries { get; init; }
+        public string NoSearchTerm { get; init; }
+        public Func<string, string> NoSearchResults { get; init; }
         public Func<int, string> LogEntries { get; init; }
         public string InvalidApiKey { get; init; }
         public Func<DateTime, string> LockedOut { get; init; }
@@ -52,12 +57,17 @@ namespace PersonalLogManagerClient.Services
             TitleEntries = "Entries",
             PreviousDay = "Previous day",
             NextDay = "Next day",
-            Loading = "Loading…",
+            Calendar = "Calendar",
+            Search = "Search",
+            SearchPlaceholder = "Search entries",
+            Loading = "Loading...",
             Refresh = "Refresh",
             SortAscending = "Sort ascending",
             SortDescending = "Sort descending",
             NoApiKeyNotice = "Set an API key in the top bar to load entries.",
             NoEntries = date => $"No entries for {date}.",
+            NoSearchTerm = "Enter a search term.",
+            NoSearchResults = searchTerm => $"No entries contain '{searchTerm}'.",
             LogEntries = count => $"{count} log entries",
             InvalidApiKey = "Invalid API key.",
             LockedOut = until => $"Too many failed attempts. Requests blocked until {until:HH:mm}.",
@@ -83,12 +93,17 @@ namespace PersonalLogManagerClient.Services
             TitleEntries = "Intrări",
             PreviousDay = "Ziua anterioară",
             NextDay = "Ziua următoare",
-            Loading = "Se încarcă…",
+            Calendar = "Calendar",
+            Search = "Căutare",
+            SearchPlaceholder = "Caută în intrări",
+            Loading = "Se încarcă...",
             Refresh = "Reîncarcă",
             SortAscending = "Sortare crescătoare",
             SortDescending = "Sortare descrescătoare",
             NoApiKeyNotice = "Setați o cheie API în bara de sus pentru a încărca intrările.",
             NoEntries = date => $"Nu există intrări pentru {date}.",
+            NoSearchTerm = "Introduceți un termen de căutare.",
+            NoSearchResults = searchTerm => $"Nicio intrare nu conține „{searchTerm}”.",
             LogEntries = count => $"{count} intrări în jurnal",
             InvalidApiKey = "Cheie API invalidă.",
             LockedOut = until => $"Prea multe încercări eșuate. Cererile sunt blocate până la {until:HH:mm}.",

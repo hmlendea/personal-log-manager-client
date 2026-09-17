@@ -132,6 +132,85 @@ namespace PersonalLogManagerClient.UnitTests
             Assert.That(result, Is.Empty);
         }
 
+        [Test]
+        public async Task GivenMatchingEntries_WhenSearchingLogs_ThenOnlyFinalTextMatchesAreReturnedCaseInsensitively()
+        {
+            client.Setup(api => api.SendRequestAsync<GetLogsRequest, GetLogsResponse>(
+                    HttpMethod.Get,
+                    It.Is<GetLogsRequest>(request => request.Date == null && request.Count == 100000),
+                    It.IsAny<NuciApiRequestAuthorisationInfo>(),
+                    "/PersonalLog"))
+                .ReturnsAsync(new GetLogsResponse
+                {
+                    Logs =
+                    [
+                        "L4 2026-09-17: 08:00 Visited Solara",
+                        "L8 2026-09-16: 09:00 SOLARA forecast",
+                        "L16 2026-09-15: 10:00 Visited Cornova"
+                    ]
+                });
+
+            List<LogEntry> result = await service.SearchLogsAsync("solara", true);
+
+            Assert.That(result.Select(entry => entry.Id), Is.EqualTo(new[] { "L4", "L8" }));
+        }
+
+        [TestCase("")]
+        [TestCase("  ")]
+        [TestCase(null)]
+        public async Task GivenAnEmptySearchTerm_WhenSearchingLogs_ThenNoEntriesAreReturned(string searchTerm)
+        {
+            client.Setup(api => api.SendRequestAsync<GetLogsRequest, GetLogsResponse>(
+                    It.IsAny<HttpMethod>(),
+                    It.IsAny<GetLogsRequest>(),
+                    It.IsAny<NuciApiRequestAuthorisationInfo>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(new GetLogsResponse { Logs = ["L4 2026-09-17: 08:00 Visited Solara"] });
+
+            List<LogEntry> result = await service.SearchLogsAsync(searchTerm);
+
+            Assert.That(result, Is.Empty);
+            Assert.That(client.Invocations, Is.Empty);
+        }
+
+        [Test]
+        public async Task GivenMatchingEntries_WhenSearchingLogsWithTheDefaultOrder_ThenMatchesAreReturnedInDescendingOrder()
+        {
+            client.Setup(api => api.SendRequestAsync<GetLogsRequest, GetLogsResponse>(
+                    It.IsAny<HttpMethod>(),
+                    It.IsAny<GetLogsRequest>(),
+                    It.IsAny<NuciApiRequestAuthorisationInfo>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(new GetLogsResponse
+                {
+                    Logs =
+                    [
+                        "L4 2026-09-16: 08:00 Bencheamobil service",
+                        "L8 2026-09-17: 09:00 Visited Bencheamobil"
+                    ]
+                });
+
+            List<LogEntry> result = await service.SearchLogsAsync("Bencheamobil");
+
+            Assert.That(result.Select(entry => entry.Id), Is.EqualTo(new[] { "L8", "L4" }));
+        }
+
+        [TestCase("L4")]
+        [TestCase("2026-09-17")]
+        public async Task GivenAMatchOutsideTheFinalText_WhenSearchingLogs_ThenNoEntriesAreReturned(string searchTerm)
+        {
+            client.Setup(api => api.SendRequestAsync<GetLogsRequest, GetLogsResponse>(
+                    It.IsAny<HttpMethod>(),
+                    It.IsAny<GetLogsRequest>(),
+                    It.IsAny<NuciApiRequestAuthorisationInfo>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(new GetLogsResponse { Logs = ["L4 2026-09-17: 08:00 Visited Solara"] });
+
+            List<LogEntry> result = await service.SearchLogsAsync(searchTerm);
+
+            Assert.That(result, Is.Empty);
+        }
+
         [TestCase("AUTHENTICATION_FAILURE")]
         [TestCase("UNAUTHORISED")]
         public void GivenAnAuthenticationError_WhenGettingLogsForADate_ThenAnInvalidKeyExceptionIsThrown(string errorCode)

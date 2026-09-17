@@ -267,46 +267,46 @@ html, body {
     gap: 8px;
 }
 
-@media (min-width: 768px) {
-    :root {
-        --nav-bar-height: 0px;
-    }
+.entries-nav-controls,
+.calendar-controls,
+.search-controls,
+.view-mode-selector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
-    .top-bar-auth {
-        flex: 0 0 auto;
-    }
+.btn-view-mode {
+    background: transparent;
+    border: 1px solid var(--input-border);
+    color: var(--text-muted);
+}
 
-    .top-bar-title {
-        flex: 1;
-    }
+.btn-view-mode.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--body-bg);
+}
 
-    .top-bar-locale {
-        flex: 0 0 auto;
-    }
+.search-input {
+    width: min(32vw, 320px);
+    height: 32px;
+    padding: 0 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    color: var(--text);
+    outline: none;
+}
 
-    .nav-bar {
-        top: 0;
-        height: var(--bar-height);
-        background: transparent;
-        border-bottom: none;
-        pointer-events: none;
-        z-index: 101;
-        /* 16px bar-padding + 32px auth-btn + 8px flex-gap */
-        padding-left: 56px;
-        /* 16px bar-padding + 120px locale-select + 8px flex-gap */
-        padding-right: 144px;
-    }
+.search-input:focus {
+    border-color: var(--input-border-focus);
+}
 
-    /* When the API key input is visible, extend left padding to clear it. */
-    body:has(.api-key-input) .nav-bar {
-        /* 16px bar-padding + 32px save-btn + 8px flex-gap + 200px input + 8px flex-gap */
-        padding-left: 264px;
-    }
-    }
-
-    .nav-bar > * {
-        pointer-events: auto;
-    }
+.btn-search {
+    padding: 0 10px;
+    background: var(--accent);
+    color: var(--body-bg);
 }
 
 .entries-header {
@@ -728,6 +728,36 @@ html, body {
 .entry-item.is-selected {
     border-left-color: var(--accent-hover);
     background: var(--input-border);
+}
+
+.entry-date {
+    margin-right: 10px;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 767px) {
+    :root {
+        --nav-bar-height: 96px;
+    }
+
+    .nav-bar {
+        height: var(--nav-bar-height);
+        flex-wrap: wrap;
+    }
+
+    .entries-nav-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .btn-view-mode {
+        padding: 0 8px;
+    }
+
+    .search-input {
+        width: min(35vw, 220px);
+    }
 }
 
 /* ── Blazor error UI ────────────────────────────────── */

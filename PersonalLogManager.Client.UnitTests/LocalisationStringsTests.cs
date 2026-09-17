@@ -32,6 +32,18 @@ namespace PersonalLogManagerClient.UnitTests
         public void GivenRomanianStrings_WhenFormattingNoEntries_ThenTheDateIsIncluded()
             => Assert.That(LocalisationStrings.Romanian.NoEntries("2026-09-17"), Is.EqualTo("Nu există intrări pentru 2026-09-17."));
 
+        [Test]
+        public void GivenEnglishStrings_WhenFormattingNoSearchResults_ThenTheSearchTermIsIncluded()
+            => Assert.That(
+                LocalisationStrings.English.NoSearchResults("Bencheamobil"),
+                Is.EqualTo("No entries contain 'Bencheamobil'."));
+
+        [Test]
+        public void GivenRomanianStrings_WhenFormattingNoSearchResults_ThenTheSearchTermIsIncluded()
+            => Assert.That(
+                LocalisationStrings.Romanian.NoSearchResults("Bencheamobil"),
+                Is.EqualTo("Nicio intrare nu conține „Bencheamobil”."));
+
         [TestCase(0)]
         [TestCase(1)]
         [TestCase(42)]
@@ -63,11 +75,15 @@ namespace PersonalLogManagerClient.UnitTests
             Assert.That(strings.TitleEntries, Is.Not.Empty);
             Assert.That(strings.PreviousDay, Is.Not.Empty);
             Assert.That(strings.NextDay, Is.Not.Empty);
+            Assert.That(strings.Calendar, Is.Not.Empty);
+            Assert.That(strings.Search, Is.Not.Empty);
+            Assert.That(strings.SearchPlaceholder, Is.Not.Empty);
             Assert.That(strings.Loading, Is.Not.Empty);
             Assert.That(strings.Refresh, Is.Not.Empty);
             Assert.That(strings.SortAscending, Is.Not.Empty);
             Assert.That(strings.SortDescending, Is.Not.Empty);
             Assert.That(strings.NoApiKeyNotice, Is.Not.Empty);
+            Assert.That(strings.NoSearchTerm, Is.Not.Empty);
             Assert.That(strings.InvalidApiKey, Is.Not.Empty);
             Assert.That(strings.EntryDetails, Is.Not.Empty);
             Assert.That(strings.EditEntry, Is.Not.Empty);
@@ -83,6 +99,7 @@ namespace PersonalLogManagerClient.UnitTests
             Assert.That(strings.FooterApiSource, Is.Not.Empty);
             Assert.That(strings.FooterClientSource, Is.Not.Empty);
             Assert.That(strings.NoEntries, Is.Not.Null);
+            Assert.That(strings.NoSearchResults, Is.Not.Null);
             Assert.That(strings.LogEntries, Is.Not.Null);
             Assert.That(strings.LockedOut, Is.Not.Null);
         }

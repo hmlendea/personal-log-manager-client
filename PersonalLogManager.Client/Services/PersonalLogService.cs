@@ -13,6 +13,8 @@ namespace PersonalLogManagerClient.Services
 {
     public class PersonalLogService(INuciApiClient client, ApiKeyService apiKeyService, LocaleService localeService, ApiKeyRateLimitService rateLimitService)
     {
+        private static int SearchResultMaximumCount => 100000;
+
         private readonly INuciApiClient client = client;
         private readonly ApiKeyService apiKeyService = apiKeyService;
         private readonly LocaleService localeService = localeService;
@@ -69,6 +71,23 @@ namespace PersonalLogManagerClient.Services
             }
 
             return [];
+        }
+
+        public Task<List<LogEntry>> SearchLogsAsync(string searchTerm)
+            => SearchLogsAsync(searchTerm, false);
+
+        public async Task<List<LogEntry>> SearchLogsAsync(string searchTerm, bool ascending)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return [];
+            }
+
+            List<LogEntry> logs = await GetLogsForDateAsync(null, SearchResultMaximumCount, ascending);
+
+            return logs
+                .Where(entry => entry.Text.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
         }
 
         public async Task<GetLogByIdResponse> GetLogByIdAsync(string id)
