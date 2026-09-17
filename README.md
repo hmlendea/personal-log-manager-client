@@ -28,6 +28,7 @@ A Blazor Server web application for browsing and managing personal log entries t
 ## ✨ Features
 
 - Browse log entries for any past date or today
+- Search the entire journal by final built entry text, with dates displayed in the results
 - Navigate between days using previous/next buttons or a date picker
 - View full entry details in a side panel, retrieved via the GET by ID endpoint
 - Create, edit, and delete log entries directly from the UI
@@ -43,7 +44,7 @@ A Blazor Server web application for browsing and managing personal log entries t
 
 Launch the application and navigate to `http://localhost:5294`. Enter your API key in the top bar on first launch - it will be saved in browser local storage.
 
-Utilise the date navigation controls to browse log entries. Click any entry to open the detail panel. From the panel you can:
+Use the Calendar view to navigate entries by date, or select Search to locate entries by their final displayed text. Click any entry to open the detail panel. From the panel you can:
 
 - View the full structured entry data returned by the API
 - Edit the entry using the ✏️ button, which opens an editable JSON form pre-populated with the current values

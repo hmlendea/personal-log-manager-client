@@ -21,10 +21,31 @@
         </button>
     </div>
     <div class="entries-nav-controls">
-        <button class="btn btn-nav" title="@L.PreviousDay" @onclick="GoToPreviousDay" disabled="@loading">&#8592;</button>
-        <CustomDatePicker Value="@currentDate" Max="@today" Disabled="@loading"
-                          ValueChanged="OnDatePickerChanged" />
-        <button class="btn btn-nav" title="@L.NextDay" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
+        <div class="view-mode-selector" role="group">
+            <button class="btn btn-view-mode @(viewMode == EntryViewMode.Calendar ? "is-active" : "")"
+                    @onclick="() => ChangeViewMode(EntryViewMode.Calendar)">@L.Calendar</button>
+            <button class="btn btn-view-mode @(viewMode == EntryViewMode.Search ? "is-active" : "")"
+                    @onclick="() => ChangeViewMode(EntryViewMode.Search)">@L.Search</button>
+        </div>
+        @if (viewMode == EntryViewMode.Calendar)
+        {
+            <div class="calendar-controls">
+                <button class="btn btn-nav" title="@L.PreviousDay" @onclick="GoToPreviousDay" disabled="@loading">&#8592;</button>
+                <CustomDatePicker Value="@currentDate" Max="@today" Disabled="@loading"
+                                  ValueChanged="OnDatePickerChanged" />
+                <button class="btn btn-nav" title="@L.NextDay" @onclick="GoToNextDay" disabled="@(loading || currentDate == today)">&#8594;</button>
+            </div>
+        }
+        else
+        {
+            <form class="search-controls" @onsubmit="SearchEntries" @onsubmit:preventDefault>
+                <input class="search-input" type="search" placeholder="@L.SearchPlaceholder"
+                      @bind="searchTerm" @bind:event="oninput" disabled="@loading" />
+                <button class="btn btn-search" type="submit" title="@L.Search" disabled="@(loading || string.IsNullOrWhiteSpace(searchTerm))">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+        }
     </div>
 </nav>
 
@@ -43,14 +64,20 @@
     }
     else if (entries.Count == 0)
     {
-        <p class="entries-notice">@L.NoEntries(currentDate)</p>
+        <p class="entries-notice">@EmptyEntriesMessage</p>
     }
     else
     {
         <ul class="entries-list">
             @foreach (LogEntry entry in entries)
             {
-                <li class="@GetEntryItemCssClass(entry)" @onclick="() => SelectEntry(entry)">@entry.Text</li>
+                <li class="@GetEntryItemCssClass(entry)" @onclick="() => SelectEntry(entry)">
+                    @if (viewMode == EntryViewMode.Search)
+                    {
+                        <span class="entry-date">@entry.Date</span>
+                    }
+                    @entry.Text
+                </li>
             }
         </ul>
         <p class="entries-count">@L.LogEntries(entries.Count)</p>
@@ -67,16 +94,39 @@
     private string yesterday = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
     private string currentDate = DateTime.Today.ToString("yyyy-MM-dd");
     private List<LogEntry> entries = [];
+    private EntryViewMode viewMode = EntryViewMode.Calendar;
     private bool loading;
     private bool hasApiKey;
     private bool ascending = false;
     private bool fullWidth = false;
     private string error;
+    private string searchTerm = "";
+    private string appliedSearchTerm = "";
     private LogEntry selectedEntry;
 
     private LocalisationStrings L => LocaleService.Strings;
 
     private string CurrentTitle => currentDate == today ? L.TitleToday : currentDate == yesterday ? L.TitleYesterday : L.TitleEntries;
+
+    private string CurrentPageTitle => viewMode == EntryViewMode.Calendar ? CurrentTitle : L.Search;
+
+    private string EmptyEntriesMessage
+    {
+        get
+        {
+            if (viewMode == EntryViewMode.Calendar)
+            {
+                return L.NoEntries(currentDate);
+            }
+
+            if (string.IsNullOrWhiteSpace(appliedSearchTerm))
+            {
+                return L.NoSearchTerm;
+            }
+
+            return L.NoSearchResults(appliedSearchTerm);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,7 +147,7 @@
 
     private async void OnLocaleChanged()
     {
-        PageTitleService.SetTitle(CurrentTitle);
+        PageTitleService.SetTitle(CurrentPageTitle);
 
         await LoadEntries();
         await InvokeAsync(StateHasChanged);
@@ -145,6 +195,31 @@
         ascending = !ascending;
 
         await JS.InvokeVoidAsync("localStorage.setItem", "sortAscending", ascending.ToString().ToLower());
+        await LoadEntries();
+    }
+
+    private async Task ChangeViewMode(EntryViewMode selectedViewMode)
+    {
+        if (viewMode == selectedViewMode)
+        {
+            return;
+        }
+
+        viewMode = selectedViewMode;
+        entries = [];
+        error = null;
+        selectedEntry = null;
+        PageTitleService.SetTitle(CurrentPageTitle);
+
+        if (viewMode == EntryViewMode.Calendar)
+        {
+            await LoadEntries();
+        }
+    }
+
+    private async Task SearchEntries()
+    {
+        appliedSearchTerm = searchTerm.Trim();
         await LoadEntries();
     }
 
@@ -205,7 +280,14 @@
 
         try
         {
-            entries = await LogService.GetLogsForDateAsync(currentDate, ascending: ascending);
+            if (viewMode == EntryViewMode.Calendar)
+            {
+                entries = await LogService.GetLogsForDateAsync(currentDate, ascending: ascending);
+            }
+            else
+            {
+                entries = await LogService.SearchLogsAsync(appliedSearchTerm, ascending);
+            }
         }
         catch (Exception ex)
         {

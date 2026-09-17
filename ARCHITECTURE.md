@@ -106,7 +106,7 @@ sequenceDiagram
 The principal runtime sequence is:
 1. `Program.Main` creates the web application builder, delegates service registration to `Startup`, builds the application, applies middleware, and runs the host.
 2. The browser receives the Razor component shell and establishes an interactive server circuit.
-3. The home page reads local storage state. When an API key exists, it invokes `PersonalLogService` to retrieve entries for the selected date.
+3. The home page reads local storage state. When an API key exists, it invokes `PersonalLogService` to retrieve entries for the selected date or searches the final built text across dates.
 4. The service creates authenticated requests through `INuciApiClient`, translates successful responses into client models, and exposes API failures as UI-visible exceptions.
 5. The UI renders the result and can initiate detail retrieval, update, delete, date navigation, sorting, localisation, or preference changes.
 
@@ -197,7 +197,7 @@ flowchart LR
 | Data or Store | Owner | Representation and Storage | Lifecycle or Consistency |
 |---------------|-------|----------------------------|--------------------------|
 | Log records | Personal Log Manager API | Remote API responses; list records are strings and details are JSON response models | Authoritative outside this repository; mutations are sent synchronously through API calls |
-| `LogEntry` list | `PersonalLogService` and `Home` | In-memory `List<LogEntry>` scoped to the active component circuit | Replaced after date, sort, edit, delete, or localisation reload |
+| `LogEntry` list | `PersonalLogService` and `Home` | In-memory `List<LogEntry>` scoped to the active component circuit | Replaced after date, search, sort, edit, delete, or localisation reload |
 | API key | Browser and `ApiKeyService` | Browser `localStorage` under `plm_api_key` | Persists until cleared by the user; transmitted as a bearer token when requests execute |
 | UI preferences | Browser and `Home` | Browser `localStorage` under `sortAscending` and `fullWidth` | Persists across browser sessions and affects presentation only |
 | Authentication failures | `ApiKeyRateLimitService` | Scoped in-memory failure timestamps and lock expiry | Five failures within ten minutes produce a thirty-minute circuit-local lockout |
@@ -243,7 +243,7 @@ sequenceDiagram
     end
 ```
 
-`Home` owns the selected date, ordering, loading flag, and list state. `PersonalLogService` owns request construction and raw-to-model conversion. A missing API key prevents the request; recognised authentication failures are recorded before the error is displayed.
+`Home` owns the active Calendar or Search view, selected date, search term, ordering, loading flag, and list state. `PersonalLogService` owns request construction, raw-to-model conversion, and case-insensitive filtering of final built entry text. Search requests omit the date filter, request the API's maximum collection size to cover the entire journal, and display each matching entry with its date. A missing API key prevents the request; recognised authentication failures are recorded before the error is displayed.
 
 ### Edit Or Delete An Entry
 
