@@ -21,6 +21,7 @@ A Blazor Server web application for browsing and managing personal log entries t
 - [Contributing](#-contributing)
 - [Related Projects](#-related-projects)
 - [Support](#-support)
+- [Documentation](#-documentation)
 - [Architecture](#-architecture)
 - [Security](#-security)
 - [License](#-license)
@@ -119,6 +120,10 @@ Discovered a bug or have a suggestion? [Open an issue](https://github.com/hmlend
 If you find this project useful, consider [funding it](https://hmlendea.go.ro/funding) or starring ⭐️ it on GitHub!
 
 [![Donate](https://raw.githubusercontent.com/hmlendea/readme-assets/master/donate_generic.png)](https://hmlendea.go.ro/funding)
+
+## 📚 Documentation
+
+See the [documentation index](./docs/README.md) for the implementation-grounded architecture, behaviour, data model, process flows, testing, operations, security, invariants, and change guidance.
 
 ## 🏗️ Architecture
 
