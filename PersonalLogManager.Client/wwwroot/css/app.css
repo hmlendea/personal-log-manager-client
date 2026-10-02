@@ -372,9 +372,14 @@ html, body {
 }
 
 .btn-view-mode {
-    background: transparent;
+    background: var(--input-bg);
     border: 1px solid var(--input-border);
-    color: var(--text-muted);
+    color: var(--text);
+    transition: border-color 0.15s;
+}
+
+.btn-view-mode:hover:not(.is-active) {
+    border-color: var(--input-border-focus);
 }
 
 .btn-view-mode.is-active {
@@ -486,16 +491,16 @@ html, body {
 }
 
 .btn-nav {
-    background: transparent;
-    color: var(--text-muted);
+    background: var(--input-bg);
+    color: var(--text);
     border: 1px solid var(--input-border);
     padding: 0 10px;
     font-size: 16px;
+    transition: border-color 0.15s;
 }
 
 .btn-nav:hover:not(:disabled) {
-    color: var(--accent);
-    border-color: var(--accent);
+    border-color: var(--input-border-focus);
 }
 
 .btn-nav:disabled {
