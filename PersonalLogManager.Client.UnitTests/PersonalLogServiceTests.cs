@@ -213,14 +213,14 @@ namespace PersonalLogManagerClient.UnitTests
 
         [TestCase("AUTHENTICATION_FAILURE")]
         [TestCase("UNAUTHORISED")]
-        public void GivenAnAuthenticationError_WhenGettingLogsForADate_ThenAnInvalidKeyExceptionIsThrown(string errorCode)
+        public async Task GivenAnAuthenticationError_WhenGettingLogsForADate_ThenAnInvalidKeyExceptionIsThrown(string errorCode)
         {
             client.Setup(api => api.SendRequestAsync<GetLogsRequest, GetLogsResponse>(
                     It.IsAny<HttpMethod>(), It.IsAny<GetLogsRequest>(), It.IsAny<NuciApiRequestAuthorisationInfo>(), It.IsAny<string>()))
                 .ReturnsAsync(new NuciApiErrorResponse { Code = errorCode });
 
-            InvalidOperationException exception = Assert.ThrowsAsync<InvalidOperationException>(
-                () => service.GetLogsForDateAsync("2026-09-17"))!;
+            InvalidOperationException exception = (await Assert.ThrowsAsync<InvalidOperationException>(
+                () => service.GetLogsForDateAsync("2026-09-17")))!;
 
             Assert.That(exception.Message, Is.EqualTo(LocalisationStrings.Romanian.InvalidApiKey));
         }
@@ -273,27 +273,27 @@ namespace PersonalLogManagerClient.UnitTests
         }
 
         [Test]
-        public void GivenAnAuthenticationError_WhenGettingLogDetails_ThenAnInvalidKeyExceptionIsThrown()
+        public async Task GivenAnAuthenticationError_WhenGettingLogDetails_ThenAnInvalidKeyExceptionIsThrown()
         {
             client.Setup(api => api.SendRequestAsync<GetLogByIdRequest, GetLogByIdResponse>(
                     It.IsAny<HttpMethod>(), It.IsAny<GetLogByIdRequest>(), It.IsAny<NuciApiRequestAuthorisationInfo>(), It.IsAny<string>()))
                 .ReturnsAsync(new NuciApiErrorResponse { Code = "UNAUTHORISED" });
 
-            InvalidOperationException exception = Assert.ThrowsAsync<InvalidOperationException>(
-                () => service.GetLogByIdAsync("L42"))!;
+            InvalidOperationException exception = (await Assert.ThrowsAsync<InvalidOperationException>(
+                () => service.GetLogByIdAsync("L42")))!;
 
             Assert.That(exception.Message, Is.EqualTo(LocalisationStrings.Romanian.InvalidApiKey));
         }
 
         [Test]
-        public void GivenAnAuthenticationError_WhenDeletingTheLog_ThenAnInvalidKeyExceptionIsThrown()
+        public async Task GivenAnAuthenticationError_WhenDeletingTheLog_ThenAnInvalidKeyExceptionIsThrown()
         {
             client.Setup(api => api.SendRequestAsync<DeleteLogRequest, NuciApiSuccessResponse>(
                     It.IsAny<HttpMethod>(), It.IsAny<DeleteLogRequest>(), It.IsAny<NuciApiRequestAuthorisationInfo>(), It.IsAny<string>()))
                 .ReturnsAsync(new NuciApiErrorResponse { Code = "AUTHENTICATION_FAILURE" });
 
-            InvalidOperationException exception = Assert.ThrowsAsync<InvalidOperationException>(
-                () => service.DeleteLogAsync("L42"))!;
+            InvalidOperationException exception = (await Assert.ThrowsAsync<InvalidOperationException>(
+                () => service.DeleteLogAsync("L42")))!;
 
             Assert.That(exception.Message, Is.EqualTo(LocalisationStrings.Romanian.InvalidApiKey));
         }
@@ -320,14 +320,14 @@ namespace PersonalLogManagerClient.UnitTests
         }
 
         [Test]
-        public void GivenAnAuthenticationError_WhenUpdatingTheLog_ThenAnInvalidKeyExceptionIsThrown()
+        public async Task GivenAnAuthenticationError_WhenUpdatingTheLog_ThenAnInvalidKeyExceptionIsThrown()
         {
             client.Setup(api => api.SendRequestAsync<UpdateLogRequest, NuciApiSuccessResponse>(
                     It.IsAny<HttpMethod>(), It.IsAny<UpdateLogRequest>(), It.IsAny<NuciApiRequestAuthorisationInfo>(), It.IsAny<string>()))
                 .ReturnsAsync(new NuciApiErrorResponse { Code = "UNAUTHORISED" });
 
-            InvalidOperationException exception = Assert.ThrowsAsync<InvalidOperationException>(
-                () => service.UpdateLogAsync("L42", "2026-09-17", "08:09", "UTC", new()))!;
+            InvalidOperationException exception = (await Assert.ThrowsAsync<InvalidOperationException>(
+                () => service.UpdateLogAsync("L42", "2026-09-17", "08:09", "UTC", new())))!;
 
             Assert.That(exception.Message, Is.EqualTo(LocalisationStrings.Romanian.InvalidApiKey));
         }
@@ -341,26 +341,26 @@ namespace PersonalLogManagerClient.UnitTests
 
             for (int index = 0; index < 5; index++)
             {
-                Assert.ThrowsAsync<InvalidOperationException>(() => service.GetLogsForDateAsync("2026-09-17"));
+                await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetLogsForDateAsync("2026-09-17"));
             }
 
             int callCount = client.Invocations.Count;
-            InvalidOperationException exception = Assert.ThrowsAsync<InvalidOperationException>(
-                () => service.GetLogsForDateAsync("2026-09-17"))!;
+            InvalidOperationException exception = (await Assert.ThrowsAsync<InvalidOperationException>(
+                () => service.GetLogsForDateAsync("2026-09-17")))!;
 
             Assert.That(exception.Message, Does.StartWith("Prea multe încercări eșuate."));
             Assert.That(client.Invocations, Has.Count.EqualTo(callCount));
         }
 
         [Test]
-        public void GivenALockedRateLimitService_WhenGettingLogDetails_ThenTheClientIsNotCalled()
+        public async Task GivenALockedRateLimitService_WhenGettingLogDetails_ThenTheClientIsNotCalled()
         {
             for (int index = 0; index < 5; index++)
             {
                 rateLimitService.RecordFailure();
             }
 
-            Assert.ThrowsAsync<InvalidOperationException>(() => service.GetLogByIdAsync("L42"));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetLogByIdAsync("L42"));
 
             Assert.That(client.Invocations, Is.Empty);
         }
