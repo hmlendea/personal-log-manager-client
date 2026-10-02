@@ -329,6 +329,39 @@ html, body {
     gap: 8px;
 }
 
+@media (min-width: 1100px) {
+    :root {
+        --nav-bar-height: 0px;
+    }
+
+    .top-bar-auth {
+        flex: 0 0 auto;
+    }
+
+    .top-bar-title {
+        flex: 1;
+    }
+
+    .top-bar-locale {
+        flex: 0 0 auto;
+    }
+
+    .nav-bar {
+        top: 0;
+        height: var(--bar-height);
+        padding-left: 56px;
+        padding-right: 144px;
+        background: transparent;
+        border-bottom: none;
+        pointer-events: none;
+        z-index: 101;
+    }
+
+    .nav-bar > * {
+        pointer-events: auto;
+    }
+}
+
 .entries-nav-controls,
 .calendar-controls,
 .search-controls,
