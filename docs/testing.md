@@ -2,21 +2,21 @@
 
 **Purpose:** Map tests to production components, behaviour, and known gaps.
 
-**Scope:** [PersonalLogManager.Client.UnitTests](../PersonalLogManager.Client.UnitTests/) and its project declaration.
+**Scope:** [PersonalLogManager.Client.UnitTests](../PersonalLogManager.Client.UnitTests/), [PersonalLogManager.Client.IntegrationTests](../PersonalLogManager.Client.IntegrationTests/), and their project declarations.
 
-**Primary source areas:** Test classes in the unit-test project and [PersonalLogManager.Client.UnitTests.csproj](../PersonalLogManager.Client.UnitTests/PersonalLogManager.Client.UnitTests.csproj).
+**Primary source areas:** Test classes in both test projects, [PersonalLogManager.Client.UnitTests.csproj](../PersonalLogManager.Client.UnitTests/PersonalLogManager.Client.UnitTests.csproj), and [PersonalLogManager.Client.IntegrationTests.csproj](../PersonalLogManager.Client.IntegrationTests/PersonalLogManager.Client.IntegrationTests.csproj).
 
 **Related documents:** [Change guide](change-guide.md), [Architecture](architecture.md), [Error handling](error-handling.md).
 
 ## Test technology and execution
 
-The project targets `net10.0` and uses NUnit with Moq and Bunit. Restore and run all tests with:
+Both projects target `net10.0` and use NUnit. Unit tests use Moq and Bunit. Integration tests use Bunit for component workflows and `Microsoft.AspNetCore.Mvc.Testing` for in-memory HTTP host checks. Restore and run all tests with:
 
 ```bash
 dotnet test PersonalLogManagerClient.slnx
 ```
 
-The tests mock `INuciApiClient` and `IJSRuntime`; `HomeTests` uses a Bunit context and loose JS interop. No test requires a live upstream API according to the source inspected.
+The tests mock `INuciApiClient` and browser JS interop at external boundaries. Integration fixtures use the production services between those boundaries, and host tests execute the configured ASP.NET Core middleware in memory. No test requires a live upstream API.
 
 ## Coverage map
 
@@ -32,11 +32,16 @@ The tests mock `INuciApiClient` and `IJSRuntime`; `HomeTests` uses a Bunit conte
 | `ModelTests` | Model property retention and JSON property names. |
 | `PageTitleServiceTests` | Title assignment and change-event suppression for identical values. |
 | `ServiceCollectionExtensionsTests` | Configuration binding and registration presence. |
+| `EntryDetailWorkflowTests` | Detail loading, complete and fallback rendering, JSON edit validation, update/delete payloads, authentication failures, cancellation, and callbacks. |
+| `HomeWorkflowIntegrationTests` | Calendar/search workflows through real services, storage preferences, parsing, localisation, lockout, selection, and mutation reloads. |
+| `AuthenticationAndLocaleWorkflowTests` | Locale persistence and rerendering, authentication dialog keyboard and pointer behavior, validation reset, API-key storage, and deauthentication. |
+| `CustomDatePickerIntegrationTests` | Input boundaries, invalid and maximum dates, callback suppression, calendar lifecycle, navigation, and month/year selection. |
+| `HostAndCompositionIntegrationTests` | Configuration binding, scoped lifetimes, service resolution, document shell, static assets, content types, and path-base middleware. |
 
 ## Important absent coverage
 
-There are no live API integration tests, browser-level end-to-end tests, tests of `EntryDetailPanel` JSON validation, tests of `CustomDatePicker` internals, tests of service-worker caching, tests of real HTTP transport, tests of non-authentication API failures, or tests of concurrent component loads. These absences are documented limitations, not evidence that the paths are unused.
+There are no live upstream API tests, browser-automation end-to-end tests, service-worker caching tests, real socket transport tests, or concurrent circuit/load tests. Non-authentication error semantics remain limited by the production client, which only turns authentication error responses into exceptions. These absences are documented limitations, not evidence that the paths are unused.
 
 ## Test conventions
 
-Tests use descriptive Given/When/Then method names, NUnit assertions, deterministic sample IDs and dates, Moq request predicates, and Bunit DOM assertions. When changing a façade method, update request/response and failure tests; when changing `Home`, update the Bunit workflow tests and test storage values.
+Tests use descriptive Given/When/Then method names, NUnit assertions, deterministic sample IDs and dates, Moq request predicates, and Bunit DOM assertions. Integration tests replace only external boundaries and retain production services. When changing a facade method, update request/response and failure tests; when changing `Home`, update the Bunit workflow tests and test storage values.

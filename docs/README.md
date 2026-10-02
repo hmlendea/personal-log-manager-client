@@ -4,7 +4,7 @@
 
 **Scope:** Current source, tests, configuration, static assets, release script, and existing repository policies.
 
-**Primary source areas:** [PersonalLogManager.Client](../PersonalLogManager.Client/), [unit tests](../PersonalLogManager.Client.UnitTests/), [project file](../PersonalLogManager.Client/PersonalLogManagerClient.csproj), [README](../README.md), [ARCHITECTURE.md](../ARCHITECTURE.md), and [SECURITY.md](../SECURITY.md).
+**Primary source areas:** [PersonalLogManager.Client](../PersonalLogManager.Client/), [unit tests](../PersonalLogManager.Client.UnitTests/), [integration tests](../PersonalLogManager.Client.IntegrationTests/), [project file](../PersonalLogManager.Client/PersonalLogManagerClient.csproj), [README](../README.md), [ARCHITECTURE.md](../ARCHITECTURE.md), and [SECURITY.md](../SECURITY.md).
 
 **Related documents:** All documents below are mutually linked; [ambiguities and open questions](ambiguities-and-open-questions.md) records matters that source evidence does not settle.
 
