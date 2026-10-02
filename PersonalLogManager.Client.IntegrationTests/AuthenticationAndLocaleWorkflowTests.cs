@@ -113,10 +113,9 @@ namespace PersonalLogManagerClient.IntegrationTests
             widget.Dispose();
             footer.Dispose();
 
-            AsyncTestDelegate changeLocale = async () =>
-                await localeService.SetLocaleAsync(LocaleService.Romanian);
-
-            Assert.That(changeLocale, Throws.Nothing);
+            Assert.That(
+                async () => await localeService.SetLocaleAsync(LocaleService.Romanian),
+                Throws.Nothing);
         }
 
         [Test]
