@@ -25,7 +25,8 @@ Load, edit, and delete exceptions are retained in separate panel error fields. S
 ## Shared controls
 
 - `MainLayout` renders the API key widget, title, locale selector, body, and footer, and subscribes to title changes.
-- `ApiKeyWidget` masks input, ignores blank saves, trims saved keys, clears storage, and supports Enter submission.
+- The page navigation overlays the application top bar at widths of 1100 pixels or greater. Narrower viewports retain a dedicated navigation row to prevent control and title overlap.
+- `ApiKeyWidget` opens a modal authentication dialog, masks input, reports blank submissions, trims saved keys, supports keyboard submission and cancellation, and clears stored credentials during deauthentication.
 - `LocaleSelector` initialises the locale service and only submits supported locale values.
 - `CustomDatePicker` accepts `Value`, `Max`, and `Disabled`, clamps numeric parts, rejects invalid or future dates, and emits ISO `yyyy-MM-dd` values. Its selectable year range starts at 1995.
 - `AppFooter` renders links to the API and client repositories and responds to locale changes.
