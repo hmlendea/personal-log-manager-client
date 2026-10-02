@@ -25,6 +25,7 @@ The tests mock `INuciApiClient` and `IJSRuntime`; `HomeTests` uses a Bunit conte
 | `PersonalLogServiceTests` | List parsing, order, null/unexpected responses, search filtering, API paths, payloads, auth errors, and lockout short-circuiting. |
 | `ApiKeyRateLimitServiceTests` | Initial state, threshold, approximate expiry, and lock stability. |
 | `HomeTests` | Default/calendar/search rendering, loading state, navigation, date validation, search display, ordering, locale reload, and mutation callbacks. |
+| `ApiKeyWidgetTests` | Authentication-dialog visibility, required-key validation, trimmed storage, and deauthentication. |
 | `ApiKeyServiceTests` | Exact local-storage calls for get, set, and clear. |
 | `LocaleServiceTests` | Defaults, supported/unsupported locale handling, storage, and change events. |
 | `LocalisationStringsTests` | Formatter output and label population in English and Romanian. |

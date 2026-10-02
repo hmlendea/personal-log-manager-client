@@ -38,8 +38,12 @@ namespace PersonalLogManagerClient.Services
         public string ConfirmDelete { get; init; }
 
         // API key widget
+        public string Authenticate { get; init; }
+        public string Deauthenticate { get; init; }
         public string ClearKey { get; init; }
         public string ApiKeyPlaceholder { get; init; }
+        public string ApiKeyRequired { get; init; }
+        public string Cancel { get; init; }
         public string Save { get; init; }
 
         // Not Found page
@@ -77,8 +81,12 @@ namespace PersonalLogManagerClient.Services
             Edit = "Edit",
             Delete = "Delete",
             ConfirmDelete = "Confirm Delete",
+            Authenticate = "Authenticate",
+            Deauthenticate = "Deauthenticate",
             ClearKey = "Clear Key",
             ApiKeyPlaceholder = "API Key",
+            ApiKeyRequired = "An API key is required.",
+            Cancel = "Cancel",
             Save = "Save",
             NotFoundTitle = "Not Found",
             NotFoundMessage = "Sorry, the content you are looking for does not exist.",
@@ -113,8 +121,12 @@ namespace PersonalLogManagerClient.Services
             Edit = "Modifică",
             Delete = "Elimină",
             ConfirmDelete = "Confirmă eliminarea",
+            Authenticate = "Autentificare",
+            Deauthenticate = "Deautentificare",
             ClearKey = "Șterge cheia",
             ApiKeyPlaceholder = "Cheia API",
+            ApiKeyRequired = "Cheia API este obligatorie.",
+            Cancel = "Anulează",
             Save = "Salvează",
             NotFoundTitle = "Pagina nu a fost găsită",
             NotFoundMessage = "Ne pare rău, conținutul căutat nu există.",

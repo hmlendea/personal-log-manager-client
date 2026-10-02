@@ -91,8 +91,12 @@ namespace PersonalLogManagerClient.UnitTests
             Assert.That(strings.Edit, Is.Not.Empty);
             Assert.That(strings.Delete, Is.Not.Empty);
             Assert.That(strings.ConfirmDelete, Is.Not.Empty);
+            Assert.That(strings.Authenticate, Is.Not.Empty);
+            Assert.That(strings.Deauthenticate, Is.Not.Empty);
             Assert.That(strings.ClearKey, Is.Not.Empty);
             Assert.That(strings.ApiKeyPlaceholder, Is.Not.Empty);
+            Assert.That(strings.ApiKeyRequired, Is.Not.Empty);
+            Assert.That(strings.Cancel, Is.Not.Empty);
             Assert.That(strings.Save, Is.Not.Empty);
             Assert.That(strings.NotFoundTitle, Is.Not.Empty);
             Assert.That(strings.NotFoundMessage, Is.Not.Empty);

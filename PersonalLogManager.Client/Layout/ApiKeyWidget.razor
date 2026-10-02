@@ -2,57 +2,129 @@
 @inject ApiKeyService ApiKeyService
 @inject LocaleService LocaleService
 
-@if (hasKey)
+@if (!hasApiKey)
 {
-    <button class="btn btn-clear-key" title="@L.ClearKey" @onclick="ClearKey"><i class="fa-solid fa-unlock"></i></button>
+    <button
+        class="btn btn-authenticate"
+        title="@L.Authenticate"
+        @onclick="OpenAuthenticationDialog">
+        <i class="fa-solid fa-user-lock"></i>
+    </button>
 }
 else
 {
-    <button class="btn btn-save-key" title="@L.Save" @onclick="SaveKey"><i class="fa-solid fa-key"></i></button>
-    <input @ref="inputRef"
-           type="password"
-           class="api-key-input"
-           placeholder="@L.ApiKeyPlaceholder"
-           autocomplete="off"
-           spellcheck="false"
-           @bind="inputValue"
-           @bind:event="oninput"
-           @onkeydown="OnKeyDown" />
+    <button class="btn btn-clear-key" title="@L.Deauthenticate" @onclick="ClearApiKeyAsync">
+        <i class="fa-solid fa-unlock"></i>
+    </button>
+}
+
+@if (isAuthenticationDialogVisible)
+{
+    <div class="auth-popup-backdrop" @onclick="CloseAuthenticationDialog"></div>
+
+    <div
+        class="auth-popup"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-popup-title"
+        @onclick:stopPropagation="true"
+        @onkeydown="OnKeyDownAsync">
+        <div id="auth-popup-title" class="auth-popup-title">@L.Authenticate</div>
+
+        <label class="auth-popup-label" for="auth-api-key">@L.ApiKeyPlaceholder</label>
+        <input
+            id="auth-api-key"
+            type="password"
+            class="auth-popup-input"
+            autocomplete="current-password"
+            spellcheck="false"
+            @bind="apiKeyInputValue"
+            @bind:event="oninput" />
+
+        @if (!string.IsNullOrWhiteSpace(validationMessage))
+        {
+            <p class="auth-popup-error" role="alert">@validationMessage</p>
+        }
+
+        <div class="auth-popup-actions">
+            <button class="btn btn-auth-cancel" @onclick="CloseAuthenticationDialog">
+                @L.Cancel
+            </button>
+            <button class="btn btn-auth-confirm" @onclick="SaveApiKeyAsync">
+                @L.Save
+            </button>
+        </div>
+    </div>
 }
 
 @code {
-    private bool hasKey;
-    private string inputValue = "";
-    private ElementReference inputRef;
+    private bool hasApiKey;
+    private bool isAuthenticationDialogVisible;
+    private string apiKeyInputValue = "";
+    private string validationMessage;
+
     private LocalisationStrings L => LocaleService.Strings;
 
     protected override async Task OnInitializedAsync()
     {
         LocaleService.OnChange += OnLocaleChanged;
-        string key = await ApiKeyService.GetApiKeyAsync();
-        hasKey = !string.IsNullOrEmpty(key);
+        string apiKey = await ApiKeyService.GetApiKeyAsync();
+        hasApiKey = !string.IsNullOrEmpty(apiKey);
     }
 
     private void OnLocaleChanged() => InvokeAsync(StateHasChanged);
 
     public void Dispose() => LocaleService.OnChange -= OnLocaleChanged;
 
-    private async Task SaveKey()
+    private void OpenAuthenticationDialog()
     {
-        if (string.IsNullOrWhiteSpace(inputValue)) return;
-        await ApiKeyService.SetApiKeyAsync(inputValue.Trim());
-        inputValue = "";
-        hasKey = true;
+        apiKeyInputValue = "";
+        validationMessage = null;
+        isAuthenticationDialogVisible = true;
     }
 
-    private async Task ClearKey()
+    private void CloseAuthenticationDialog()
+    {
+        isAuthenticationDialogVisible = false;
+        validationMessage = null;
+    }
+
+    private async Task SaveApiKeyAsync()
+    {
+        string apiKey = apiKeyInputValue?.Trim();
+
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            validationMessage = L.ApiKeyRequired;
+
+            return;
+        }
+
+        await ApiKeyService.SetApiKeyAsync(apiKey);
+
+        hasApiKey = true;
+        CloseAuthenticationDialog();
+    }
+
+    private async Task ClearApiKeyAsync()
     {
         await ApiKeyService.ClearApiKeyAsync();
-        hasKey = false;
+
+        hasApiKey = false;
     }
 
-    private async Task OnKeyDown(KeyboardEventArgs e)
+    private async Task OnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
-        if (e.Key == "Enter") await SaveKey();
+        if (keyboardEventArgs.Key == "Escape")
+        {
+            CloseAuthenticationDialog();
+
+            return;
+        }
+
+        if (keyboardEventArgs.Key == "Enter")
+        {
+            await SaveApiKeyAsync();
+        }
     }
 }
