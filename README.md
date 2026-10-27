@@ -15,6 +15,7 @@ A Blazor Server web application for browsing and managing personal log entries t
 - [Development](#️-development)
   - [Requirements](#requirements)
   - [Build](#build)
+  - [Test](#test)
   - [Run](#run)
   - [Release](#release)
   - [Dependencies](#dependencies)
@@ -75,6 +76,12 @@ All NuGet dependencies are restored automatically by `dotnet restore`.
 dotnet build PersonalLogManagerClient.slnx
 ```
 
+### Test
+
+```bash
+dotnet test PersonalLogManagerClient.slnx
+```
+
 ### Run
 
 ```bash
@@ -127,7 +134,9 @@ See the [documentation index](./docs/README.md) for the implementation-grounded 
 
 ## 🏗️ Architecture
 
-See the [architecture documentation](./ARCHITECTURE.md) for the current system boundaries, runtime flows, component ownership, and integration contracts.
+Personal Log Manager Client is a Blazor Server web client that presents and mutates log entries through the Personal Log Manager API.
+
+See the [architecture documentation](./ARCHITECTURE.md) for the system context, principal components, runtime flows, ownership boundaries, dependencies, constraints, and extension points.
 
 ## 🛡️ Security
 

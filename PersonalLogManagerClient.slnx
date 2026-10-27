@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="PersonalLogManager.Client/PersonalLogManagerClient.csproj" />
+  <Project Path="PersonalLogManager.Client.ArchitectureTests/PersonalLogManager.Client.ArchitectureTests.csproj" />
   <Project Path="PersonalLogManager.Client.IntegrationTests/PersonalLogManager.Client.IntegrationTests.csproj" />
   <Project Path="PersonalLogManager.Client.UnitTests/PersonalLogManager.Client.UnitTests.csproj" />
 </Solution>

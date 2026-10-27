@@ -355,15 +355,15 @@ The application is deployed as one .NET web process and serves the Blazor applic
 
 ## ✅ Testing And Verification
 
-No test project or automated test suite is present in the repository. The architecture-sensitive verification currently available is compilation and manual execution of the principal browser workflows: startup, API-key entry/clearing, date navigation, list retrieval, detail retrieval, JSON editing, deletion, localisation, and path-base hosting.
+The repository has unit, integration, and architecture test projects. The architecture tests use ArchUnit.NET and NUnit to verify that presentation components do not depend on the API transport, production does not reference test projects or assemblies, and the production assembly does not declare `InternalsVisibleTo`. The architecture test project explicitly loads the production and transport assemblies and reuses the loaded architecture across its rules.
 
-Execute the principal automated verification with:
+Execute the automated verification with:
 
 ```bash
-dotnet build PersonalLogManagerClient.csproj
+dotnet test PersonalLogManagerClient.slnx
 ```
 
-Integration verification against a running Personal Log Manager API and focused tests for rate limiting, request mapping, and component error states remain coverage gaps in the current repository.
+Live upstream API tests, browser-automation end-to-end tests, real socket transport tests, and concurrent circuit/load tests remain coverage gaps in the current repository.
 
 ## ⚠️ Design Constraints
 
