@@ -31,6 +31,12 @@ This document describes the current architecture of the Personal Log Manager Cli
 - [Design Constraints](#-design-constraints)
 - [Extension Points](#-extension-points)
   - [API Client Boundary](#api-client-boundary)
+- [Architecture Decisions](#-architecture-decisions)
+- [Source Map](#-source-map)
+- [Related Documentation](#-related-documentation)
+- [Design Constraints](#-design-constraints)
+- [Extension Points](#-extension-points)
+  - [API Client Boundary](#api-client-boundary)
 - [Source Map](#-source-map)
 - [Related Documentation](#-related-documentation)
 
@@ -384,7 +390,21 @@ Live upstream API tests, browser-automation end-to-end tests, real socket transp
 
 The extension must preserve asynchronous request semantics, bearer-authentication support, the configured base URL, and the request/response models consumed by `PersonalLogService`. New log operations should remain behind that service façade rather than being called directly from Razor components.
 
-## 🗺️ Source Map
+## � Architecture Decisions
+
+| Decision | Rationale | Consequence | Record |
+|----------|-----------|-------------|--------|
+| Use interactive server rendering without prerendering | `App.razor` sets `InteractiveServerRenderMode(prerender: false)` | Component initialisation and JS interop occur after circuit establishment. | [Design decisions](docs/design-decisions.md) |
+| Centralise API operations in `PersonalLogService` | All four methods call injected `INuciApiClient`; UI injects the façade | API changes should be concentrated at this boundary. | [Design decisions](docs/design-decisions.md) |
+| Treat API list strings as a client parsing contract | Compiled regex and fallback `LogEntry` construction | List-format changes can silently produce empty IDs/dates. | [Design decisions](docs/design-decisions.md) |
+| Search by fetching up to 100000 records and filtering locally | `SearchResultMaximumCount` and `SearchLogsAsync` | Search cost and completeness depend on API maximum and returned ordering. | [Design decisions](docs/design-decisions.md) |
+| Scope rate limiting to a circuit | `ApiKeyRateLimitService` is registered scoped | It is not protection against distributed or cross-circuit attempts. | [Design decisions](docs/design-decisions.md) |
+| Use browser local storage for credentials and preferences | JS interop keys in services and `Home` | Values persist in the browser, not on the server; security depends on browser context. | [Design decisions](docs/design-decisions.md) |
+| Reload after successful mutation | `Home.OnEntryDeleted` and `OnEntryEdited` call `LoadEntries` | Remote state is authoritative; no optimistic local mutation. | [Design decisions](docs/design-decisions.md) |
+| Let upstream validate edited data | Panel checks JSON syntax and presence of `data`, then sends arbitrary values | Date/time/schema errors are remote concerns. | [Design decisions](docs/design-decisions.md) |
+| Cache static resources through a service worker | `service-worker.js` cache strategies | Offline behaviour is limited to cached app resources, not log data. | [Design decisions](docs/design-decisions.md) |
+
+## �🗺️ Source Map
 
 | Area | Path |
 |------|------|
@@ -401,3 +421,7 @@ The extension must preserve asynchronous request semantics, bearer-authenticatio
 - [`README.md`](README.md) documents usage, configuration, development commands, dependencies, and contribution guidance.
 - [`SECURITY.md`](SECURITY.md) defines supported versions, vulnerability-reporting scope, and coordinated disclosure expectations.
 - [`LICENSE`](LICENSE) defines the project's licensing terms.
+- [`docs/design-decisions.md`](docs/design-decisions.md) records implementation choices and their behavioural consequences.
+- [`docs/architecture.md`](docs/architecture.md) provides a complementary architectural narrative with additional diagrams.
+- [`docs/invariants.md`](docs/invariants.md) lists invariants that must be preserved across changes.
+- [`docs/ambiguities-and-open-questions.md`](docs/ambiguities-and-open-questions.md) records unresolved matters.
