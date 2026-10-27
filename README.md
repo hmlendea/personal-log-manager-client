@@ -108,12 +108,18 @@ This script downloads and executes an external release helper from `https://raw.
 
 ## 🤝 Contributing
 
-You are welcome to bring any suggestion, feedback or modification to this project.
+You are welcome to submit any suggestion, feedback, or modification to this project.
 
 When doing so, please:
 - Maintain cross-platform compatibility
-- Maintain the pull requests as focused and consistent with the existing code style
-- Revise the documentation when behaviour changes
+- Submit focused pull requests that conform to the existing code style
+- Maintain your branch synchronised with `master`
+- Revise the documentation when functionality changes
+- Properly test all modifications, including edge cases and error conditions
+- Include tests for additional or modified functionality
+- Raise a new [issue](https://github.com/hmlendea/personal-log-manager-client/issues) for problems or suggestions
+
+See the [contributing guidelines](./CONTRIBUTING.md) for details on how to report issues, suggest enhancements, and submit changes.
 
 ## 🔗 Related Projects
 
