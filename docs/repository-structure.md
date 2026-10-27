@@ -26,7 +26,9 @@
 |   |-- appsettings.json                  Runtime configuration defaults
 |   |-- Properties/launchSettings.json    Local launch profiles
 |   `-- css/                              Project stylesheet source
+|-- PersonalLogManager.Client.ArchitectureTests/  ArchUnit.NET and NUnit architecture tests
 |-- PersonalLogManager.Client.UnitTests/  NUnit, Moq, and Bunit tests
+|-- PersonalLogManager.Client.IntegrationTests/  NUnit and Bunit workflow tests
 |-- ARCHITECTURE.md                       Existing high-level architecture document
 |-- SECURITY.md                           Security policy and reporting scope
 |-- README.md                             User and contributor entry point
@@ -41,7 +43,7 @@
 - Put transport shapes in `Models/`; preserve the distinction between list, detail, update, and delete representations.
 - Put browser-local state access behind the existing service where a reusable concern exists; presentation-only preferences currently remain in `Home.razor`.
 - Put routed user views in `Pages/` and shared controls in `Layout/`.
-- Put tests in the unit-test project and keep test doubles at the boundary they replace.
+- Put behaviour tests in the unit- or integration-test project and architecture rules in the architecture-test project.
 - Do not treat `bin/` or `obj/` as source. Do not place secrets in `appsettings.json` or documentation.
 
 ## Significant files

@@ -2,15 +2,15 @@
 
 **Purpose:** Map tests to production components, behaviour, and known gaps.
 
-**Scope:** [PersonalLogManager.Client.UnitTests](../PersonalLogManager.Client.UnitTests/), [PersonalLogManager.Client.IntegrationTests](../PersonalLogManager.Client.IntegrationTests/), and their project declarations.
+**Scope:** [PersonalLogManager.Client.UnitTests](../PersonalLogManager.Client.UnitTests/), [PersonalLogManager.Client.IntegrationTests](../PersonalLogManager.Client.IntegrationTests/), [PersonalLogManager.Client.ArchitectureTests](../PersonalLogManager.Client.ArchitectureTests/), and their project declarations.
 
-**Primary source areas:** Test classes in both test projects, [PersonalLogManager.Client.UnitTests.csproj](../PersonalLogManager.Client.UnitTests/PersonalLogManager.Client.UnitTests.csproj), and [PersonalLogManager.Client.IntegrationTests.csproj](../PersonalLogManager.Client.IntegrationTests/PersonalLogManager.Client.IntegrationTests.csproj).
+**Primary source areas:** Test classes across all three test projects and their project declarations, including [PersonalLogManager.Client.ArchitectureTests.csproj](../PersonalLogManager.Client.ArchitectureTests/PersonalLogManager.Client.ArchitectureTests.csproj).
 
 **Related documents:** [Change guide](change-guide.md), [Architecture](architecture.md), [Error handling](error-handling.md).
 
 ## Test technology and execution
 
-Both projects target `net10.0` and use NUnit. Unit tests use Moq and Bunit. Integration tests use Bunit for component workflows and `Microsoft.AspNetCore.Mvc.Testing` for in-memory HTTP host checks. Restore and run all tests with:
+All three projects target `net10.0` and use NUnit. Unit tests use Moq and Bunit. Integration tests use Bunit for component workflows and `Microsoft.AspNetCore.Mvc.Testing` for in-memory HTTP host checks. Architecture tests use ArchUnit.NET to enforce the presentation-to-transport boundary and prevent production references to test projects or assemblies. Restore and run all tests with:
 
 ```bash
 dotnet test PersonalLogManagerClient.slnx
@@ -37,6 +37,7 @@ The tests mock `INuciApiClient` and browser JS interop at external boundaries. I
 | `AuthenticationAndLocaleWorkflowTests` | Locale persistence and rerendering, authentication dialog keyboard and pointer behavior, validation reset, API-key storage, and deauthentication. |
 | `CustomDatePickerIntegrationTests` | Input boundaries, invalid and maximum dates, callback suppression, calendar lifecycle, navigation, and month/year selection. |
 | `HostAndCompositionIntegrationTests` | Configuration binding, scoped lifetimes, service resolution, document shell, static assets, content types, and path-base middleware. |
+| `ClientArchitectureTests` | Presentation transport isolation, production project and assembly references, and absence of `InternalsVisibleTo`. |
 
 ## Important absent coverage
 
