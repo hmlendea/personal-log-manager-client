@@ -1,7 +1,7 @@
 [![Donate](https://img.shields.io/badge/-%E2%99%A5%20Donate-%23ff69b4)](https://hmlendea.go.ro/funding)
 [![Latest Release](https://img.shields.io/github/v/release/hmlendea/personal-log-manager-client)](https://github.com/hmlendea/personal-log-manager-client/releases/latest)
 [![Build Status](https://github.com/hmlendea/personal-log-manager-client/actions/workflows/dotnet.yml/badge.svg)](https://github.com/hmlendea/personal-log-manager-client/actions/workflows/dotnet.yml)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://gnu.org/licenses/gpl-3.0)
+[![License](https://img.shields.io/github/license/hmlendea/personal-log-manager-client)](https://github.com/hmlendea/personal-log-manager-client/blob/master/LICENSE)
 
 # Personal Log Manager Client
 
@@ -9,10 +9,10 @@ A Blazor Server web application for browsing and managing personal log entries t
 
 ## 📑 Table of Contents
 
-- [Features](#-features)
+- [Capabilities](#-capabilities)
 - [Usage](#-usage)
-- [Configuration](#️-configuration)
-- [Development](#️-development)
+- [Configuration](#-configuration)
+- [Development](#-development)
   - [Requirements](#requirements)
   - [Build](#build)
   - [Test](#test)
@@ -21,13 +21,14 @@ A Blazor Server web application for browsing and managing personal log entries t
   - [Dependencies](#dependencies)
 - [Contributing](#-contributing)
 - [Related Projects](#-related-projects)
-- [Support](#-support)
 - [Documentation](#-documentation)
 - [Architecture](#-architecture)
 - [Security](#-security)
+- [Privacy and Data](#-privacy-and-data)
+- [Code of Conduct](#-code-of-conduct)
 - [License](#-license)
 
-## ✨ Features
+## ✨ Capabilities
 
 - Browse log entries for any past date or today
 - Search the entire journal by final built entry text, with dates displayed in the results
@@ -102,9 +103,9 @@ This script downloads and executes an external release helper from `https://raw.
 
 ### Dependencies
 
-| Package | Purpose |
-|---------|---------|
-| `NuciAPI.Client` | HTTP client and request/response infrastructure for communicating with the Personal Log Manager API |
+| Package | Version | Scope | Purpose |
+|---------|---------|-------|---------|
+| `NuciAPI.Client` | 1.2.3 | runtime | HTTP client and request/response infrastructure for communicating with the Personal Log Manager API |
 
 ## 🤝 Contributing
 
@@ -112,6 +113,7 @@ You are welcome to submit any suggestion, feedback, or modification to this proj
 
 When doing so, please:
 - Maintain cross-platform compatibility
+- Preserve the existing public contract unless a breaking change is intentional
 - Submit focused pull requests that conform to the existing code style
 - Maintain your branch synchronised with `master`
 - Revise the documentation when functionality changes
@@ -119,20 +121,12 @@ When doing so, please:
 - Include tests for additional or modified functionality
 - Raise a new [issue](https://github.com/hmlendea/personal-log-manager-client/issues) for problems or suggestions
 
-See the [contributing guidelines](./CONTRIBUTING.md) for details on how to report issues, suggest enhancements, and submit changes.
+See the [Contributing Guidelines](./CONTRIBUTING.md) for details on how to report issues, suggest enhancements, and submit changes.
 
 ## 🔗 Related Projects
 
 - [Personal Data Logger](https://github.com/hmlendea/personal-data-logger): The data collection tool that feeds into the Personal Log Manager
 - [Personal Log Manager](https://github.com/hmlendea/personal-log-manager): The server-side API that this client communicates with
-
-## 💝 Support
-
-Discovered a bug or have a suggestion? [Open an issue](https://github.com/hmlendea/personal-log-manager-client/issues)!
-
-If you find this project useful, consider [funding it](https://hmlendea.go.ro/funding) or starring ⭐️ it on GitHub!
-
-[![Donate](https://raw.githubusercontent.com/hmlendea/readme-assets/master/donate_generic.png)](https://hmlendea.go.ro/funding)
 
 ## 📚 Documentation
 
@@ -142,11 +136,13 @@ See the [documentation index](./docs/README.md) for the implementation-grounded 
 
 Personal Log Manager Client is a Blazor Server web client that presents and mutates log entries through the Personal Log Manager API.
 
-See the [architecture documentation](./ARCHITECTURE.md) for the system context, principal components, runtime flows, ownership boundaries, dependencies, constraints, and extension points.
+See the [Architecture Documentation](./ARCHITECTURE.md) for the system context, principal components, runtime flows, ownership boundaries, dependencies, constraints, and extension points.
 
-## 🛡️ Security
+## 🔒 Security
 
-Please refer to the [security policy](./SECURITY.md) for supported versions and vulnerability reporting guidance.
+Personal Log Manager Client follows coordinated disclosure for security vulnerabilities.
+
+For information on reporting security vulnerabilities, see the [Security Policy](./SECURITY.md).
 
 ## 🛡️ Privacy and Data
 
@@ -154,9 +150,17 @@ Personal Log Manager Client handles API keys and log entries as described in [PR
 
 ## 📜 Code of Conduct
 
-This project follows the [Code of Conduct](CODE_OF_CONDUCT.md).
+See the [Code of Conduct](./CODE_OF_CONDUCT.md) for the standards of conduct expected in all project spaces.
+
+## 💝 Project Engagement
+
+Discovered a problem or have a suggestion? [Open an issue](https://github.com/hmlendea/personal-log-manager-client/issues)!
+
+If you find this project useful, consider [funding it](https://hmlendea.go.ro/funding) or starring ⭐️ it on GitHub!
+
+[![Donate](https://raw.githubusercontent.com/hmlendea/readme-assets/master/donate_generic.png)](https://hmlendea.go.ro/funding)
 
 ## 📄 License
 
-Licensed under the `GNU General Public License v3.0` or later.
-See [LICENSE](./LICENSE) for details.
+This project is being distributed under the `GNU General Public License v3.0` or later.
+See [LICENSE](./LICENSE) for additional information.
